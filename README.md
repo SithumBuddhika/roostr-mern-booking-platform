@@ -340,14 +340,17 @@ npm start
 
 
 
-## 🔮 Future Improvements
+## 🚀 Future Improvements
 
--Integrate a real payment gateway (Stripe / PayPal).
--Add full review system stored in the database.
--Booking history pages for both guests and hosts.
--Map view with geolocation for listings.
--Email notifications for booking confirmation & cancellation.
--Multi-language support and currency conversion.
+- Add advanced search filters (price range, amenities, ratings, city).
+- Implement dynamic pricing (seasonal rates, weekend/long-stay discounts).
+- Add host analytics dashboard (revenue, occupancy, best-performing listings).
+- Build in-app messaging between host and guest.
+- Add review & rating system for stays.
+- Create an admin panel to manage users, listings, and bookings.
+- Integrate real payment gateway (Stripe/PayPal) instead of mock flow.
+- Improve mobile responsiveness and performance (loading states, accessibility).
+
 
 ##👨‍💻 About the Developer
 -Name: Sithum Buddhika Jayalal
