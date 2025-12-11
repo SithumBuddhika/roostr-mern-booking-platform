@@ -358,6 +358,20 @@ npm start
  -Role: Full-stack Developer / Software Engineering Undergraduate
  -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
+ ## 👨‍💻 About the Developer
+
+- Full-stack web development (MERN)
+- Data analytics & dashboards
+- UI/UX design (especially building pixel-perfect UIs from Figma)
+- Practical, real-world booking & e-commerce systems
+
+
+**Contact**
+
+- 📧 Email: [officialsithumbuddhika@gmail.com](mailto:officialsithumbuddhika@gmail.com)  
+- 🔗 LinkedIn: [Sithum Buddhika Jayalal](https://www.linkedin.com/in/sithum-buddhika-jayalal-827860341)
+
+
 
 ## 📬 Contact
 
