@@ -304,13 +304,13 @@ npm start
 ## 🖼 Screenshots
 
 **Home & Search**
-![Home screen](./Screenshots/Home-Screenpng.png)
-![Home screen](./Screenshots/Search1.png)
-![Home screen](./Screenshots/Search2.png)
-![Home screen](./Screenshots/Search3.png)
+![Home screen](src/Screenshots/Home-Screenpng.png)
+![Serach Destination](src/Screenshots/Search1.png)
+![Search Dates](src/Screenshots/Search2.png)
+![Search](src/Screenshots/Search3.png)
 
 **Room Details & Editing**
-![Room details](./Screenshots/Room-Details.png)
+![Room details](src/Screenshots/Room-Details.png)
 
 
 **Booking & Payment**
