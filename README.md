@@ -353,6 +353,7 @@ npm start
 
 
 ##👨‍💻 About the Developer
+
  -Name: Sithum Buddhika Jayalal
  -Role: Full-stack Developer / Software Engineering Undergraduate
  -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
