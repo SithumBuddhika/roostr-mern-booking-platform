@@ -335,7 +335,7 @@ npm start
 
 **Profile + Past Bookings**
 ![Recent Booking](src/Screenshots/past-bookings.png)
-![Receipt PDF](src/Screenshots/receipt.png)
+![Receipt PDF](src/Screenshots/booking-receipt.png)
 
 **Sign up & Signin**
 ![Sign-in](src/Screenshots/sign-in.png)
@@ -356,13 +356,6 @@ npm start
 - Create an admin panel to manage users, listings, and bookings.
 - Integrate real payment gateway (Stripe/PayPal) instead of mock flow.
 - Improve mobile responsiveness and performance (loading states, accessibility).
-
-
-##👨‍💻 About the Developer
-
- -Name: Sithum Buddhika Jayalal
- -Role: Full-stack Developer / Software Engineering Undergraduate
- -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
  ## 👨‍💻 About the Developer
 
