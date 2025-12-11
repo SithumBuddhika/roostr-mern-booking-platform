@@ -313,7 +313,7 @@ npm start
 **Room Details & Editing**
 <br />
 ![Room details](src/Screenshots/Room-Details.png)
-![Amenities Modal](src/Screenshots/amenities-modalamenities-modal.png)
+![Amenities Modal](src/Screenshots/amenities-modal.png)
 
 **Booking & Payment**
 <br />
