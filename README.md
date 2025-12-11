@@ -21,8 +21,6 @@ https://www.figma.com/design/GSkaUyjHk4TIFkMhdQri7v/Roostr-Website?node-id=0-1&t
 
 ---
 
----
-
 ## 🧾 Table of Contents
 
 - [Features](#-features)
@@ -281,22 +279,22 @@ REACT_APP_API_URL=http://localhost:5000
 
 ## 🚀 Running the Project
 
-- ** 1. Clone the repository
+**1. Clone the repository**
 ```
 git clone https://github.com/SithumBuddhika/roostr-mern-booking-platform.git
 cd roostr-mern-booking-platform
 
 ```
-- ** 2. Install dependencies **
+**2. Install dependencies**
 ```
 cd backend
 npm install
 ```
 
-- ** 3. Configure environment **
+**3. Configure environment**
   -Create .env files for both backend and frontend using the examples above.
 
-- ** 4. Start the backend server **
+**4. Start the backend server**
 ````
 cd ..
 npm start
@@ -313,28 +311,28 @@ npm start
 
 
 **Booking & Payment**
-![booking modal](./Screenshots/booking1.png)
-![payment gateway](./Screenshots/Payment1.png)
-![payment gateway](./Screenshots/Payment2.png)
-![payment gateway](./Screenshots/Payment3.png)
-![Thank You After Payment](./Screenshots/Payment4.png)
+![booking modal](src/Screenshots/booking1.png)
+![payment gateway](src/Screenshots/Payment1.png)
+![payment gateway](src/Screenshots/Payment2.png)
+![payment gateway](src/Screenshots/Payment3.png)
+![Thank You After Payment](src/Screenshots/Payment4.png)
 
 **Host Dashboard**
-![Host Dashoard](./Screenshots/dashboard-1.png)
-![Host Dashoard](./Screenshots/dashboard-2.png)
+![Host Dashoard](src/Screenshots/dashboard-1.png)
+![Host Dashoard](src/Screenshots/dashboard-2.png)
 
 **Host Dashboard + Manage Room/Pricing**
-![Price Management](./Screenshots/roomdetails-edit-1.png)
-![Room Management](./Screenshots/roomdetails-edit-1.png)
+![Price Management](src/Screenshots/roomdetails-edit-1.png)
+![Room Management](src/Screenshots/roomdetails-edit-1.png)
 
 **Profile + Past Bookings**
-![Recent Booking](./Screenshots/past-bookings.png)
+![Recent Booking](src/Screenshots/past-bookings.png)
 
 **Sign up & Signin**
 
 **Menu & Logout**
-![Menu](./Screenshots/menu.png)
-![Logout](./Screenshots/logout.png)
+![Menu](src/Screenshots/menu.png)
+![Logout](src/Screenshots/logout.png)
 
 
 
@@ -348,14 +346,16 @@ npm start
 -Multi-language support and currency conversion.
 
 ##👨‍💻 About the Developer
-
 -Name: Sithum Buddhika Jayalal
 -Role: Full-stack Developer / Software Engineering Undergraduate
 -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
--officialsithumbuddhika@gmail.com
--LinkedIn: https://www.linkedin.com/in/sithum-buddhika-jayalal-827860341?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
-- Link for Roostr Figma Design - https://www.figma.com/design/GSkaUyjHk4TIFkMhdQri7v/Roostr-Website?node-id=0-1&t=8yTHahoXjhXnvRqr-1
+
+## 📬 Contact
+
+- Email: [officialsithumbuddhika@gmail.com](mailto:officialsithumbuddhika@gmail.com)  
+- LinkedIn: [Sithum Buddhika Jayalal](https://www.linkedin.com/in/sithum-buddhika-jayalal-827860341)
+
 
 
   
