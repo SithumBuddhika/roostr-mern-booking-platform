@@ -179,13 +179,13 @@ https://www.figma.com/design/GSkaUyjHk4TIFkMhdQri7v/Roostr-Website?node-id=0-1&t
 ## 📂 Project Structure
 
 > High-level overview (actual files may include more components and utilities).
-
-```text
+```
 roostr-mern-booking-platform/
 ├── backend/
 │   ├── config/
 │   │   ├── cloudinary.js
 │   │   └── db.js
+│   │
 │   ├── controllers/
 │   │   ├── authController.js
 │   │   ├── bookingController.js
@@ -194,14 +194,18 @@ roostr-mern-booking-platform/
 │   │   ├── roomMetaController.js
 │   │   ├── searchController.js
 │   │   └── userController.js
+│   │
 │   ├── middleware/
 │   │   ├── auth.js
-│   │   └── authMiddleware.js
+│   │   ├── authMiddleware.js
+│   │   └── upload.js
+│   │
 │   ├── models/
 │   │   ├── Booking.js
 │   │   ├── Room.js
 │   │   ├── RoomMeta.js
 │   │   └── User.js
+│   │
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── bookingRoutes.js
@@ -210,52 +214,100 @@ roostr-mern-booking-platform/
 │   │   ├── roomRoutes.js
 │   │   ├── searchRoutes.js
 │   │   └── userRoutes.js
-│   ├── server.js
-│   └── package.json
+│   │
+│   ├── .env
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+│
+├── public/
+│   ├── index.html
+│   └── ...
 │
 ├── src/
-│   ├── assets/              # Logos, icons, room images
-│   ├── components/          # Navbars, Calendar, Modals, Cards, etc.
+│   ├── assets/
+│   │   ├── logo.png
+│   │   ├── homes.png
+│   │   ├── experiences.png
+│   │   ├── services.png
+│   │   ├── user.png
+│   │   ├── menu.png
+│   │   ├── search.png
+│   │   └── roomimages/           # room photos, perk icons, amenity icons, rating icons, host/customer avatars, etc.
+│   │
+│   ├── components/
+│   │   ├── AmenitiesModal.jsx
+│   │   ├── BurgerMenu.jsx
+│   │   ├── Calendar.jsx
+│   │   ├── Footer.jsx
+│   │   ├── JustNav.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── NoSearchNav.jsx
+│   │   ├── SearchRibbon.jsx
+│   │   ├── SuccessModal.jsx
+│   │   ├── SuccessModalForFinish.jsx
+│   │   ├── suggestdesination.jsx
+│   │   └── Who.jsx
+│   │
 │   ├── context/
 │   │   ├── AuthContext.jsx
 │   │   └── SearchContext.jsx
+│   │
 │   ├── pages/
-│   │   ├── HomeScreen.jsx
-│   │   ├── RoomDetails.jsx
-│   │   ├── PaymentPage.jsx
-│   │   ├── FinishBooking.jsx
-│   │   ├── HostDashboard.jsx
 │   │   ├── AddNewRoom.jsx
 │   │   ├── BecomeHost.jsx
+│   │   ├── FinishBooking.jsx
+│   │   ├── HomeScreen.jsx
+│   │   ├── HostDashboard.jsx
+│   │   ├── Login.jsx
+│   │   ├── PaymentPage.jsx
 │   │   ├── Profile.jsx
-│   │   ├── Signup.jsx
-│   │   └── Login.jsx
+│   │   ├── RoomDetails.jsx
+│   │   └── Signup.jsx
+│   │
+│   ├── Screenshots/
+│   │   ├── Home-Screenpng.png
+│   │   ├── Room-Details.png
+│   │   ├── roomdetails-edit-1.png
+│   │   ├── roomdetails-edit-2.png
+│   │   ├── booking1.png
+│   │   ├── Payment1.png
+│   │   ├── Payment2.png
+│   │   ├── Payment3.png
+│   │   ├── Payment4.png
+│   │   ├── dashboard-1.png
+│   │   ├── dashboard-2.png
+│   │   ├── past-bookings.png
+│   │   ├── Search1.png
+│   │   ├── Search2.png
+│   │   ├── Search3.png
+│   │   ├── menu.png
+│   │   ├── logout.png
+│   │   ├── sign-in.png
+│   │   ├── sign-up.png
+│   │   ├── become-host.png
+│   │   ├── booking-receipt.png
+│   │   ├── pricing.png
+│   │   └── Roostr_Receipt_5699338.pdf
+│   │
+│   ├── api.js
+│   ├── App.css
 │   ├── App.js
-│   └── index.js
+│   ├── App.test.js
+│   ├── index.css
+│   ├── index.js
+│   ├── logo.svg
+│   ├── reportWebVitals.js
+│   └── setupTests.js
 │
-├── Screenshots/
-│   ├── Home-Screenpng.png
-│   ├── Room-Details.png
-│   ├── roomdetails-edit-1.png
-│   ├── roomdetails-edit-2.png
-│   ├── booking1.png
-│   ├── Payment1.png
-│   ├── Payment2.png
-│   ├── Payment3.png
-│   ├── Payment4.png
-│   ├── dashboard-1.png
-│   ├── dashboard-2.png
-│   ├── past-bookings.png
-│   ├── Search1.png
-│   ├── Search2.png
-│   ├── Search3.png
-│   ├── menu.png
-│   ├── logout.png
-│   └── Roostr_Receipt_5699338.pdf
-│
+├── .env
+├── .gitignore
 ├── package.json
+├── package-lock.json
+├── postcss.config.js
 ├── README.md
-└── ...
+└── tailwind.config.js
+
 ```
 ## Backend – backend/.env
 ````
