@@ -357,6 +357,7 @@ npm start
 
 **Home & Search**
 <br />
+<br />
 ![Home screen](src/Screenshots/Home-Screenpng.png)
 ![Serach Destination](src/Screenshots/Search1.png)
 ![Search Dates](src/Screenshots/Search2.png)
@@ -364,13 +365,16 @@ npm start
 
 **Room Details & Editing**
 <br />
+<br />
 ![Room details](src/Screenshots/Room-Details.png)
 ![Amenities Modal](src/Screenshots/amenities-modal.png)
 
 **Booking & Payment**
 <br />
+<br />
 ![Booking](src/Screenshots/pricing.png)
 ![booking modal](src/Screenshots/booking1.png)
+<br />
 <br />
 ![payment gateway](src/Screenshots/Payment1.png)
 ![payment gateway](src/Screenshots/Payment2.png)
@@ -379,22 +383,27 @@ npm start
 
 **Become a Host**
 <br />
+<br />
 ![Sign-up](src/Screenshots/become-host.png)
 
 **Host Dashboard**
+<br />
 <br />
 ![Host Dashoard](src/Screenshots/dashboard-1.png)
 ![Host Dashoard](src/Screenshots/dashboard-2.png)
 
 **Host Dashboard + Manage Room/Pricing**
 <br />
+<br />
 ![Price Management](src/Screenshots/roomdetails-edit-1.png)
 ![Room Management](src/Screenshots/roomdetails-edit-1.png)
 
 **Profile + Past Bookings**
 <br />
+<br />
 ![Recent Booking](src/Screenshots/past-bookings.png)
 **Booking Receipt**
+<br />
 <br />
 ![Receipt PDF](src/Screenshots/booking-receipt.png)
 
@@ -403,6 +412,7 @@ npm start
 ![Sign-up](src/Screenshots/sign-up.png)
 
 **Menu & Logout**
+<br />
 <br />
 ![Menu](src/Screenshots/menu.png)
 ![Logout](src/Screenshots/logout.png)
