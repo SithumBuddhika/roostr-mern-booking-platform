@@ -304,40 +304,56 @@ npm start
 ## 🖼 Screenshots
 
 **Home & Search**
+<br />
 ![Home screen](src/Screenshots/Home-Screenpng.png)
 ![Serach Destination](src/Screenshots/Search1.png)
 ![Search Dates](src/Screenshots/Search2.png)
 ![Search](src/Screenshots/Search3.png)
 
 **Room Details & Editing**
+<br />
 ![Room details](src/Screenshots/Room-Details.png)
 
 
 **Booking & Payment**
+<br />
+![Booking](src/Screenshots/pricing.png)
 ![booking modal](src/Screenshots/booking1.png)
-&nbsp;
+<br />
 ![payment gateway](src/Screenshots/Payment1.png)
 ![payment gateway](src/Screenshots/Payment2.png)
 ![payment gateway](src/Screenshots/Payment3.png)
 ![Thank You After Payment](src/Screenshots/Payment4.png)
 
+**Become a Host**
+<br />
+![Sign-up](src/Screenshots/become-host.png)
+
 **Host Dashboard**
+<br />
 ![Host Dashoard](src/Screenshots/dashboard-1.png)
 ![Host Dashoard](src/Screenshots/dashboard-2.png)
 
 **Host Dashboard + Manage Room/Pricing**
+<br />
 ![Price Management](src/Screenshots/roomdetails-edit-1.png)
 ![Room Management](src/Screenshots/roomdetails-edit-1.png)
 
 **Profile + Past Bookings**
+<br />
 ![Recent Booking](src/Screenshots/past-bookings.png)
+**Booking Receipt**
+<br />
+![Receipt PDF](src/Screenshots/booking-receipt.png)
 
 **Sign up & Signin**
+![Sign-in](src/Screenshots/sign-in.png)
+![Sign-up](src/Screenshots/sign-up.png)
 
 **Menu & Logout**
+<br />
 ![Menu](src/Screenshots/menu.png)
 ![Logout](src/Screenshots/logout.png)
-
 
 
 ## 🚀 Future Improvements
@@ -351,12 +367,12 @@ npm start
 - Integrate real payment gateway (Stripe/PayPal) instead of mock flow.
 - Improve mobile responsiveness and performance (loading states, accessibility).
 
+ ## 👨‍💻 About the Developer
 
-##👨‍💻 About the Developer
- -Name: Sithum Buddhika Jayalal
- -Role: Full-stack Developer / Software Engineering Undergraduate
- -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
-
+- Name: Sithum Buddhika Jayalal
+- Role: Full-stack Developer / Software Engineering Undergraduate
+- UI/UX design (especially building pixel-perfect UIs from Figma)
+- Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
 ## 📬 Contact
 
