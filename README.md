@@ -304,12 +304,14 @@ npm start
 ## 🖼 Screenshots
 
 **Home & Search**
+\<br /><br />
 ![Home screen](src/Screenshots/Home-Screenpng.png)
 ![Serach Destination](src/Screenshots/Search1.png)
 ![Search Dates](src/Screenshots/Search2.png)
 ![Search](src/Screenshots/Search3.png)
 
 **Room Details & Editing**
+\<br /><br />
 ![Room details](src/Screenshots/Room-Details.png)
 
 
