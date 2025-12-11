@@ -312,6 +312,7 @@ npm start
 
 **Booking & Payment**
 ![booking modal](src/Screenshots/booking1.png)
+
 ![payment gateway](src/Screenshots/Payment1.png)
 ![payment gateway](src/Screenshots/Payment2.png)
 ![payment gateway](src/Screenshots/Payment3.png)
