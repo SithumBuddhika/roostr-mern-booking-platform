@@ -314,12 +314,16 @@ npm start
 
 
 **Booking & Payment**
+![Booking](src/Screenshots/pricing.png)
 ![booking modal](src/Screenshots/booking1.png)
 &nbsp;
 ![payment gateway](src/Screenshots/Payment1.png)
 ![payment gateway](src/Screenshots/Payment2.png)
 ![payment gateway](src/Screenshots/Payment3.png)
 ![Thank You After Payment](src/Screenshots/Payment4.png)
+
+**Become a Host**
+![Sign-up](src/Screenshots/become-host.png)
 
 **Host Dashboard**
 ![Host Dashoard](src/Screenshots/dashboard-1.png)
@@ -331,13 +335,15 @@ npm start
 
 **Profile + Past Bookings**
 ![Recent Booking](src/Screenshots/past-bookings.png)
+![Receipt PDF](src/Screenshots/receipt.png)
 
 **Sign up & Signin**
+![Sign-in](src/Screenshots/sign-in.png)
+![Sign-up](src/Screenshots/sign-up.png)
 
 **Menu & Logout**
 ![Menu](src/Screenshots/menu.png)
 ![Logout](src/Screenshots/logout.png)
-
 
 
 ## 🚀 Future Improvements
@@ -360,18 +366,10 @@ npm start
 
  ## 👨‍💻 About the Developer
 
-- Full-stack web development (MERN)
-- Data analytics & dashboards
+- Name: Sithum Buddhika Jayalal
+- Role: Full-stack Developer / Software Engineering Undergraduate
 - UI/UX design (especially building pixel-perfect UIs from Figma)
-- Practical, real-world booking & e-commerce systems
-
-
-**Contact**
-
-- 📧 Email: [officialsithumbuddhika@gmail.com](mailto:officialsithumbuddhika@gmail.com)  
-- 🔗 LinkedIn: [Sithum Buddhika Jayalal](https://www.linkedin.com/in/sithum-buddhika-jayalal-827860341)
-
-
+- Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
 ## 📬 Contact
 
