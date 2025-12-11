@@ -315,7 +315,7 @@ npm start
 
 **Booking & Payment**
 ![booking modal](src/Screenshots/booking1.png)
-
+&nbsp;
 ![payment gateway](src/Screenshots/Payment1.png)
 ![payment gateway](src/Screenshots/Payment2.png)
 ![payment gateway](src/Screenshots/Payment3.png)
@@ -353,9 +353,9 @@ npm start
 
 
 ##👨‍💻 About the Developer
--Name: Sithum Buddhika Jayalal
--Role: Full-stack Developer / Software Engineering Undergraduate
--Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
+ -Name: Sithum Buddhika Jayalal
+ -Role: Full-stack Developer / Software Engineering Undergraduate
+ -Institute: Sri Lanka Institute of Information Technology (SLIIT) – 3rd year
 
 
 ## 📬 Contact
