@@ -335,6 +335,7 @@ npm start
 
 **Profile + Past Bookings**
 ![Recent Booking](src/Screenshots/past-bookings.png)
+**Booking Receipt**
 ![Receipt PDF](src/Screenshots/booking-receipt.png)
 
 **Sign up & Signin**
