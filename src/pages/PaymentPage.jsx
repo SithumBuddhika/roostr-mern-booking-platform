@@ -314,10 +314,7 @@ const PaymentPage = () => {
         guestId: currentUserId || null,
       };
 
-      const res = await axios.post(
-        "http://localhost:5000/api/bookings",
-        payload
-      );
+      const res = await axios.post("/api/bookings", payload);
       const booking = res.data?.booking;
 
       navigate("/finish", {

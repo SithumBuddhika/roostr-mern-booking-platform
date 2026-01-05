@@ -325,9 +325,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret
 ````
 
 ## Frontend – .env at project root
-```
-REACT_APP_API_URL=http://localhost:5000
-```
+
 
 ## 🚀 Running the Project
 
