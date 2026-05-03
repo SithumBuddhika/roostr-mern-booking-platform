@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
@@ -14,4 +15,7 @@
       "destination": "/index.html"
     }
   ]
+=======
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/index" }]
+>>>>>>> 6e198733abb13ad0b5ff002e8db780f4d5fc4dd8
 }

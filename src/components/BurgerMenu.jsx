@@ -15,7 +15,7 @@ import globeIcon from "../assets/menu-globe.png";
 import helpIcon from "../assets/menu-help.png";
 import homeIcon from "../assets/menu-home.png";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = process.env.REACT_APP_API_URL;
 
 const BurgerMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
