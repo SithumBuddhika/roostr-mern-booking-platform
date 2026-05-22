@@ -1456,10 +1456,10 @@ const Profile = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-[200px_1fr] gap-8">
+        <div className="flex flex-col md:grid md:grid-cols-[200px_1fr] gap-8">
           {/* Left rail */}
-          <aside className="border-r pr-5">
-            <nav className="flex flex-col gap-4 text-[15px]">
+          <aside className="md:border-r md:pr-5">
+            <nav className="flex md:flex-col gap-4 text-[15px] border-b md:border-b-0 pb-3 md:pb-0">
               <button
                 onClick={() => setActiveTab("about")}
                 className={`text-left ${
@@ -1507,7 +1507,7 @@ const Profile = () => {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-[13px]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-[13px]">
                         <div className="flex gap-4">
                           <span className="text-gray-500 min-w-[95px] text-[12px]">Name:</span>
                           <span className="font-medium">{user.name || "—"}</span>
@@ -1660,7 +1660,7 @@ const Profile = () => {
                             CARD_PAD,
                           ].join(" ")}
                         >
-                          <div className="grid grid-cols-[64px_1fr_1fr_1fr] gap-6 items-start">
+                          <div className="flex flex-col sm:grid sm:grid-cols-[64px_1fr_1fr_1fr] gap-4 sm:gap-6 items-start">
                             <img
                               src={tripImg}
                               alt="Room"
@@ -1701,7 +1701,7 @@ const Profile = () => {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-4 gap-5 mt-6">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5 mt-6">
                             {[
                               { label: "Adults", value: t.guests?.adults ?? 1 },
                               { label: "Children", value: t.guests?.children ?? 0 },
@@ -1717,7 +1717,7 @@ const Profile = () => {
                             ))}
                           </div>
 
-                          <div className="grid grid-cols-2 gap-6 mt-6 text-[13px]">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6 text-[13px]">
                             <div>
                               <div className="text-gray-500 text-[12px] mb-1">Host Name</div>
                               <div className="font-medium">{room.hostName || "Roostr Host"}</div>
@@ -1741,18 +1741,17 @@ const Profile = () => {
                             </div>
                           </div>
 
-                          <div className="mt-6 grid grid-cols-3 items-center">
-                            <div />
+                          <div className="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
                             <button
                               onClick={() => handleCancelBooking(t._id)}
-                              className="justify-self-center text-[13px] flex items-center gap-2"
+                              className="text-[13px] flex items-center gap-2"
                             >
                               <img src={deleteIcon} className="w-[16px] h-[16px]" alt="" />
                               Cancel Booking
                             </button>
                             <button
                               onClick={() => handleDownloadReceipt(t)}
-                              className="justify-self-end text-[13px] flex items-center gap-2"
+                              className="text-[13px] flex items-center gap-2"
                             >
                               <img src={downloadIcon} className="w-[16px] h-[16px]" alt="" />
                               Download Receipt

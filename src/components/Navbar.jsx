@@ -509,16 +509,16 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-[#f3f8fe] shadow-md px-10 py-5 rounded-t-xl relative z-40">
+    <div className="bg-[#f3f8fe] shadow-md px-4 md:px-10 py-3 md:py-5 rounded-t-xl relative z-40">
       {/* Top Navbar */}
       <div className="flex items-center justify-between">
         {/* Left - Logo */}
         <div className="cursor-pointer" onClick={handleLogoClick}>
-          <img src={logo} alt="Roostr" className="h-20 w-auto" />
+          <img src={logo} alt="Roostr" className="h-12 md:h-20 w-auto" />
         </div>
 
         {/* Center - Menu Items */}
-        <div className="flex items-center space-x-16">
+        <div className="hidden md:flex items-center space-x-8 lg:space-x-16">
           {navItems.map((item) => (
             <div
               key={item.id}
@@ -551,8 +551,8 @@ const Navbar = () => {
         </div>
 
         {/* Right - Controls */}
-        <div className="flex items-center space-x-5">
-          <span className="text-sm font-medium">
+        <div className="flex items-center space-x-3 md:space-x-5">
+          <span className="text-sm font-medium hidden md:inline">
             <Link to="/become-host">Become a host</Link>
           </span>
           <img src={user} alt="user" className="h-8 w-8 rounded-full bg-[#1a1d20]" />
@@ -561,7 +561,7 @@ const Navbar = () => {
       </div>
 
       {/* ----- SEARCH RIBBON + POPUPS ----- */}
-      <div className="flex justify-center mt-6 relative">
+      <div className="hidden md:flex justify-center mt-6 relative">
         {/* Transparent overlay to close on outside-click (under nav, over content) */}
         <AnimatePresence>
           {activeField && (
@@ -736,6 +736,92 @@ const Navbar = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* ----- MOBILE SEARCH BAR ----- */}
+      <div className="flex md:hidden mt-3">
+        <button
+          type="button"
+          onClick={() => toggleField(activeField ? null : 'where')}
+          className="flex items-center gap-3 w-full bg-white rounded-full shadow-md px-4 py-2.5"
+        >
+          <img src={searchIcon} alt="search" className="h-4 w-4 opacity-60" />
+          <div className="flex flex-col text-left">
+            <span className="text-[13px] font-semibold leading-tight">
+              {destination ? destination.label : 'Where to?'}
+            </span>
+            <span className="text-[11px] text-gray-500 leading-tight">
+              {dateLabel()} · {whoLabel()}
+            </span>
+          </div>
+        </button>
+      </div>
+
+      {/* Mobile panels */}
+      <AnimatePresence>
+        {activeField && (
+          <motion.div
+            key="mobile-panel"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden absolute left-0 right-0 top-full z-50 px-2 pt-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-white rounded-2xl shadow-2xl p-4 max-h-[70vh] overflow-y-auto">
+              {/* Mobile search fields */}
+              <div className="space-y-4">
+                {/* Where */}
+                <div>
+                  <p className="text-[12px] font-semibold mb-2">Where</p>
+                  <SuggestedDestinations onSelect={(dest) => { handleDestinationSelect(dest); setActiveField('when'); }} />
+                </div>
+
+                {/* When */}
+                <div>
+                  <p className="text-[12px] font-semibold mb-2">When</p>
+                  <Calendar
+                    checkIn={checkIn}
+                    checkOut={checkOut}
+                    onSelectDate={handleDatesSelect}
+                    onClose={() => {}}
+                    bookedDates={[]}
+                  />
+                </div>
+
+                {/* Who */}
+                <div>
+                  <p className="text-[12px] font-semibold mb-2">Who</p>
+                  <Who
+                    isOpen={true}
+                    values={guests}
+                    onChange={handleGuestsChange}
+                    onClose={() => {}}
+                  />
+                </div>
+
+                {/* Search + Close */}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={handleSearch}
+                    className="flex-1 bg-[#e94a3f] text-white py-2.5 rounded-full text-[14px] font-semibold"
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeAllPanels}
+                    className="px-4 py-2.5 rounded-full border text-[14px] font-medium"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

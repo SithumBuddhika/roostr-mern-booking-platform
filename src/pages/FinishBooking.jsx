@@ -182,13 +182,13 @@ const FinishBooking = () => {
   return (
     <>
       {/* Top bar (no global navbar/footer) */}
-      <div className="bg-[#f3f8fe] px-8 py-4">
-        <img src={logo} alt="Roostr" className="h-14 w-auto" />
+      <div className="bg-[#f3f8fe] px-4 md:px-8 py-3 md:py-4">
+        <img src={logo} alt="Roostr" className="h-10 md:h-14 w-auto" />
       </div>
 
       <div className="min-h-[calc(100vh-88px)] bg-white flex flex-col items-center pt-10">
         {/* Title row */}
-        <div className="w-full max-w-[960px] flex items-center gap-3 mb-10 px-6">
+        <div className="w-full max-w-[960px] flex items-center gap-3 mb-6 md:mb-10 px-4 md:px-6">
           <button
             onClick={() => navigate(-1)}
             className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"

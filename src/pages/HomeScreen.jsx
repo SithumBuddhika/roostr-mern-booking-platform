@@ -348,7 +348,7 @@ const HomeScreen = () => {
   // ---------------- RENDER ----------------
   if (loading || searchLoading) {
     return (
-      <div className="px-14 mt-10 text-sm text-gray-600">
+      <div className="px-4 md:px-14 mt-10 text-sm text-gray-600">
         {loading ? "Loading homes..." : "Applying search filters (dates & availability)..."}
       </div>
     );
@@ -356,14 +356,14 @@ const HomeScreen = () => {
 
   if (error) {
     return (
-      <div className="px-14 mt-10 text-sm text-red-600">
+      <div className="px-4 md:px-14 mt-10 text-sm text-red-600">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="px-14 mt-10">
+    <div className="px-4 md:px-14 mt-6 md:mt-10">
       {countryList.length === 0 ? (
         <p className="text-sm text-gray-500">
           No homes match your search. Try different dates, destination or guest count.
@@ -373,7 +373,7 @@ const HomeScreen = () => {
           <section key={country} className="mb-10">
             <h2 className="text-xl font-semibold mb-5">Stays in {country}</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
               {roomsByCountry[country].map((room) => {
                 const imageUrl = getImageUrl(
                   room?.coverImage || (room?.galleryImages && room.galleryImages[0])
@@ -400,7 +400,7 @@ const HomeScreen = () => {
                     <img
                       src={imageUrl}
                       alt={room?.title || "Room"}
-                      className="rounded-xl w-full h-[150px] object-cover"
+                      className="rounded-xl w-full h-[120px] sm:h-[150px] object-cover"
                       onError={(e) => {
                         e.currentTarget.src = placeholderImg;
                       }}

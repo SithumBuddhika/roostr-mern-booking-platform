@@ -2463,13 +2463,13 @@ const RoomDetails = () => {
   return (
     <>
       <div className="bg-[#f3f8fe] min-h-screen shadow-[0_8px_40px_rgba(0,0,0,0.1)]">
-        <div className="max-w-[1280px] mx-auto px-6 pt-6 pb-20 text-[#222222] font-sans">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-6 pb-20 text-[#222222] font-sans">
           <h2 className="text-xl font-semibold mb-2">{room.title || "Roostr Listing"}</h2>
 
           {/* HERO IMAGES */}
-          <div className="grid grid-cols-3 gap-2 mb-6">
-            <div className="col-span-2">
-              <div className="w-full h-[360px] rounded-xl overflow-hidden bg-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
+            <div className="md:col-span-2">
+              <div className="w-full h-[220px] md:h-[360px] rounded-xl overflow-hidden bg-gray-100">
                 <img
                   src={mainImage}
                   alt="room main"
@@ -2478,7 +2478,7 @@ const RoomDetails = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2 h-[360px]">
+            <div className="grid grid-cols-2 gap-2 h-[160px] md:h-[360px]">
               {galleryImages.slice(0, 4).map((img, i) => (
                 <div key={i} className="w-full h-full rounded-xl overflow-hidden bg-gray-100">
                   <img
@@ -2537,7 +2537,7 @@ const RoomDetails = () => {
               <hr className="mb-6" />
               <div>
                 <h3 className="text-[15px] font-medium mb-4">What this place offers</h3>
-                <div className="grid grid-cols-2 gap-y-3 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 text-sm">
                   {amenitiesToShow.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
                       {item.img && <img src={item.img} alt={item.label} className="h-7 w-7 object-contain" />}
@@ -2559,7 +2559,7 @@ const RoomDetails = () => {
               <div className="text-[17px] font-semibold mb-6">
                 ★ 5.0 <span className="font-normal text-[16px] ml-1">26 reviews</span>
               </div>
-              <div className="grid grid-cols-2 gap-x-10 gap-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
                 {reviews.map((review, i) => (
                   <div key={i} className="mb-4">
                     <div className="flex items-center gap-3 mb-2">
@@ -2593,7 +2593,7 @@ const RoomDetails = () => {
             </div>
 
             {/* RIGHT COLUMN – BOOKING BOX */}
-            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit sticky top-32 self-start">
+            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit lg:sticky lg:top-32 self-start">
               <h3 className="text-[15px] font-semibold mb-3">Add dates for prices</h3>
 
               <div

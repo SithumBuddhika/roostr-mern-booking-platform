@@ -260,7 +260,7 @@ const ManageListingModal = ({ room, onClose, token, onRoomUpdated }) => {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-[980px] px-8 py-7 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-[980px] px-4 md:px-8 py-5 md:py-7 relative max-h-[90vh] overflow-y-auto">
         {/* close button */}
         <button
           onClick={onClose}
@@ -738,7 +738,7 @@ const HostDashboard = () => {
         {/* TOP SECTION: PROFILE + STATS */}
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           {/* LEFT: PROFILE CARD */}
-          <div className="w-full max-w-[260px] flex-shrink-0">
+          <div className="w-full max-w-[260px] flex-shrink-0 mx-auto lg:mx-0">
             <div className="bg-white rounded-[16px] shadow-[0_4px_15px_rgba(0,0,0,0.2)] p-5 text-center">
               <img
                 src={profileImg}
@@ -820,7 +820,7 @@ const HostDashboard = () => {
             </div>
 
             {/* little metrics row */}
-            <div className="grid grid-cols-3 gap-6 mb-6 text-[11px] text-gray-600">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 text-[11px] text-gray-600">
               <div>
                 <p className="font-semibold text-[12px]">Occupancy rate</p>
                 <p className="text-[16px] font-semibold text-gray-900">

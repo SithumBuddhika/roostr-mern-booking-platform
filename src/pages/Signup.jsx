@@ -493,7 +493,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] flex items-start justify-center pt-6 pb-16">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-start justify-center pt-4 md:pt-6 pb-16 px-4 md:px-0">
       <div className="w-full max-w-[430px] bg-white rounded-2xl shadow-[0_12px_35px_rgba(0,0,0,0.12)] border border-[#e3e3e3]">
         {/* Header */}
         <div className="border-b border-[#e4e4e4] px-8 py-3 flex justify-center">
@@ -558,7 +558,7 @@ const Signup = () => {
             </button>
 
             {dobOpen && (
-              <div className="mt-2 border rounded-xl shadow bg-white p-3 grid grid-cols-3 gap-3 text-[12px] z-40 absolute w-[350px]">
+              <div className="mt-2 border rounded-xl shadow bg-white p-3 grid grid-cols-3 gap-3 text-[12px] z-40 absolute w-full md:w-[350px]">
                 {/* Day */}
                 <div className="max-h-40 overflow-y-auto">
                   <div className="font-semibold mb-1">Day</div>

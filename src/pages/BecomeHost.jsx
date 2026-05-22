@@ -177,7 +177,7 @@ export default function BecomeHost() {
 
   return (
     <div className="min-h-screen bg-[#f4f4f4] py-10">
-      <div className="mx-auto max-w-[520px] bg-white rounded-3xl shadow-[0_18px_55px_rgba(0,0,0,0.16)] px-10 pt-8 pb-10">
+      <div className="mx-auto max-w-[520px] bg-white rounded-3xl shadow-[0_18px_55px_rgba(0,0,0,0.16)] px-5 md:px-10 pt-8 pb-10">
         <h1 className="text-[18px] font-semibold mb-4">Become a Host</h1>
 
         {error && (
