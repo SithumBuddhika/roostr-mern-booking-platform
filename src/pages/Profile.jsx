@@ -1508,25 +1508,25 @@ const Profile = () => {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-[13px]">
-                        <div className="flex gap-4">
-                          <span className="text-gray-500 min-w-[95px] text-[12px]">Name:</span>
-                          <span className="font-medium">{user.name || "—"}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Name:</span>
+                          <span className="font-semibold text-gray-800 text-sm">{user.name || "—"}</span>
                         </div>
-                        <div className="flex gap-4">
-                          <span className="text-gray-500 min-w-[130px] text-[12px]">
-                            Contact Number :
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                          <span className="text-gray-500 sm:min-w-[130px] text-[12px]">
+                            Contact Number:
                           </span>
-                          <span className="font-medium truncate">{user.phone || "—"}</span>
+                          <span className="font-semibold text-gray-800 text-sm truncate">{user.phone || "—"}</span>
                         </div>
 
-                        <div className="flex gap-4">
-                          <span className="text-gray-500 min-w-[95px] text-[12px]">Country:</span>
-                          <span className="font-medium">{user.country || "—"}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Country:</span>
+                          <span className="font-semibold text-gray-800 text-sm">{user.country || "—"}</span>
                         </div>
 
-                        <div className="flex gap-4 col-span-2">
-                          <span className="text-gray-500 min-w-[95px] text-[12px]">Email:</span>
-                          <span className="font-medium truncate">{user.email || "—"}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 col-span-1 sm:col-span-2">
+                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Email:</span>
+                          <span className="font-semibold text-gray-800 text-sm truncate">{user.email || "—"}</span>
                         </div>
                       </div>
 

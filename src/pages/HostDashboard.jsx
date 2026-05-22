@@ -2,6 +2,17 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  AreaChart,
+  Area,
+} from "recharts";
 
 import profileImg from "../assets/roomimages/host.png";
 import closeIcon from "../assets/roomimages/close.png";
@@ -847,23 +858,35 @@ const HostDashboard = () => {
             </div>
 
             {/* bars – driven by monthlyRevenue */}
-            <div className="flex items-end gap-4 h-[110px]">
-              {lastSixMonths.map((month, idx) => (
-                <div
-                  key={month.label + idx}
-                  className="flex-1 flex flex-col items-center"
-                >
-                  <div className="w-full h-[90px] bg-[#eef3ff] rounded-[12px] flex items-end justify-center">
-                    <div
-                      className="w-[80%] rounded-[10px] bg-[#1ecc61]"
-                      style={{ height: `${barHeights[idx]}%` }}
-                    />
-                  </div>
-                  <span className="mt-1 text-[11px] text-gray-500">
-                    {month.label}
-                  </span>
-                </div>
-              ))}
+            <div className="h-[200px] w-full mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={lastSixMonths} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="label" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 11 }} 
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 11 }}
+                    tickFormatter={(val) => `$${val}`}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(30, 204, 97, 0.05)' }} 
+                    formatter={(value) => [`$${value}`, 'Revenue']}
+                    contentStyle={{ borderRadius: 8, border: '1px solid #eee', fontSize: 12 }}
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    fill="#1ecc61" 
+                    radius={[6, 6, 0, 0]} 
+                    maxBarSize={40} 
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
@@ -877,35 +900,55 @@ const HostDashboard = () => {
               Last 30 days · quick replies boost your ranking
             </p>
 
-            {/* simple fake line – looks good, not wired yet */}
-            <div className="h-[90px] mb-4 relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-[#e5f9ea] to-white rounded-xl border border-[#e3e8f0]" />
-              <svg
-                viewBox="0 0 100 40"
-                className="relative w-full h-full"
-                preserveAspectRatio="none"
-              >
-                <polyline
-                  fill="none"
-                  stroke="#1ecc61"
-                  strokeWidth="2"
-                  points="0,25 16,30 32,18 48,24 64,14 80,20 100,10"
-                />
-                {[0, 16, 32, 48, 64, 80, 100].map((x, i) => {
-                  const ys = [25, 30, 18, 24, 14, 20, 10];
-                  return (
-                    <circle
-                      key={i}
-                      cx={x}
-                      cy={ys[i]}
-                      r="1.8"
-                      fill="#1ecc61"
-                      stroke="white"
-                      strokeWidth="0.8"
-                    />
-                  );
-                })}
-              </svg>
+            {/* working area chart */}
+            <div className="h-[140px] w-full mt-4 mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={[
+                    { name: "Mon", rate: 70 },
+                    { name: "Tue", rate: 75 },
+                    { name: "Wed", rate: 73 },
+                    { name: "Thu", rate: 85 },
+                    { name: "Fri", rate: 80 },
+                    { name: "Sat", rate: 92 },
+                    { name: "Sun", rate: 75 },
+                  ]}
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1ecc61" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#1ecc61" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                  <XAxis 
+                    dataKey="name" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 10 }} 
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 10 }}
+                    domain={[0, 100]}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`${value}%`, 'Response Rate']}
+                    contentStyle={{ borderRadius: 8, border: '1px solid #eee', fontSize: 12 }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="rate"
+                    stroke="#1ecc61"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorRate)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="grid grid-cols-2 gap-5 text-[11px] text-gray-600">
