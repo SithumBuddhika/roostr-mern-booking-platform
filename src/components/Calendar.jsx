@@ -615,7 +615,7 @@ const Calendar = ({ checkIn, checkOut, onSelectDate, onClose, bookedDates = [] }
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3 }}
-        className="z-50 bg-white p-3 shadow-xl rounded-xl w-full max-w-[500px] md:absolute md:right-0"
+        className="z-50 bg-white p-3 shadow-xl rounded-xl w-full md:w-[500px]"
 
       >
         {/* Top Summary */}

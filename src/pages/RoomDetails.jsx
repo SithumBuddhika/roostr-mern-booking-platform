@@ -2478,7 +2478,7 @@ const RoomDetails = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2 h-[160px] md:h-[360px]">
+            <div className="hidden md:grid grid-cols-2 gap-2 h-[360px]">
               {galleryImages.slice(0, 4).map((img, i) => (
                 <div key={i} className="w-full h-full rounded-xl overflow-hidden bg-gray-100">
                   <img
@@ -2593,7 +2593,7 @@ const RoomDetails = () => {
             </div>
 
             {/* RIGHT COLUMN – BOOKING BOX */}
-            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit lg:sticky lg:top-32 self-start">
+            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit lg:sticky lg:top-32 self-start relative">
               <h3 className="text-[15px] font-semibold mb-3">Add dates for prices</h3>
 
               <div
@@ -2621,41 +2621,43 @@ const RoomDetails = () => {
               </div>
 
               {calendarOpen && (
-                <Calendar
-                  checkIn={checkInDate}
-                  checkOut={checkOutDate}
-                  bookedDates={bookedDates}
-                  onSelectDate={(ci, co) => {
-                    // full range chosen
-                    if (ci && co) {
-                      setCheckInDate(ci);
-                      setCheckOutDate(co);
-                      setCalendarOpen(false);
-                      return;
-                    }
+                <div className="absolute right-0 z-50 mt-2 bg-white shadow-2xl rounded-xl border border-gray-100">
+                  <Calendar
+                    checkIn={checkInDate}
+                    checkOut={checkOutDate}
+                    bookedDates={bookedDates}
+                    onSelectDate={(ci, co) => {
+                      // full range chosen
+                      if (ci && co) {
+                        setCheckInDate(ci);
+                        setCheckOutDate(co);
+                        setCalendarOpen(false);
+                        return;
+                      }
 
-                    // clearing
-                    if (!ci && !co) {
-                      setCheckInDate(null);
-                      setCheckOutDate(null);
-                      return;
-                    }
+                      // clearing
+                      if (!ci && !co) {
+                        setCheckInDate(null);
+                        setCheckOutDate(null);
+                        return;
+                      }
 
-                    // check-in step
-                    if (activeField === "checkIn" && ci) {
-                      setCheckInDate(ci);
-                      setCheckOutDate(null);
-                      return;
-                    }
+                      // check-in step
+                      if (activeField === "checkIn" && ci) {
+                        setCheckInDate(ci);
+                        setCheckOutDate(null);
+                        return;
+                      }
 
-                    // check-out step
-                    if (activeField === "checkOut" && co && checkInDate && dayjs(co).isAfter(checkInDate)) {
-                      setCheckOutDate(co);
-                      setCalendarOpen(false);
-                    }
-                  }}
-                  onClose={() => setCalendarOpen(false)}
-                />
+                      // check-out step
+                      if (activeField === "checkOut" && co && checkInDate && dayjs(co).isAfter(checkInDate)) {
+                        setCheckOutDate(co);
+                        setCalendarOpen(false);
+                      }
+                    }}
+                    onClose={() => setCalendarOpen(false)}
+                  />
+                </div>
               )}
 
               {/* Guest dropdown */}

@@ -741,7 +741,7 @@ const Navbar = () => {
       <div className="flex md:hidden mt-3">
         <button
           type="button"
-          onClick={() => toggleField(activeField ? null : 'where')}
+          onClick={() => toggleField('where')}
           className="flex items-center gap-3 w-full bg-white rounded-full shadow-md px-4 py-2.5"
         >
           <img src={searchIcon} alt="search" className="h-4 w-4 opacity-60" />
@@ -760,63 +760,129 @@ const Navbar = () => {
       <AnimatePresence>
         {activeField && (
           <motion.div
-            key="mobile-panel"
-            initial={{ opacity: 0, y: -10 }}
+            key="mobile-search-overlay"
+            initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden absolute left-0 right-0 top-full z-50 px-2 pt-2"
+            exit={{ opacity: 0, y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+            className="md:hidden fixed inset-0 bg-[#f7f9fc] z-50 flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white rounded-2xl shadow-2xl p-4 max-h-[70vh] overflow-y-auto">
-              {/* Mobile search fields */}
-              <div className="space-y-4">
-                {/* Where */}
-                <div>
-                  <p className="text-[12px] font-semibold mb-2">Where</p>
-                  <SuggestedDestinations onSelect={(dest) => { handleDestinationSelect(dest); setActiveField('when'); }} />
-                </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 bg-white border-b border-gray-100">
+              <button 
+                type="button" 
+                onClick={closeAllPanels}
+                className="text-gray-600 text-sm font-semibold hover:text-black"
+              >
+                Cancel
+              </button>
+              <span className="text-base font-semibold">Search Roostr</span>
+              <button 
+                type="button" 
+                onClick={resetSearchState}
+                className="text-[#e94a3f] text-sm font-medium"
+              >
+                Clear all
+              </button>
+            </div>
 
-                {/* When */}
-                <div>
-                  <p className="text-[12px] font-semibold mb-2">When</p>
-                  <Calendar
-                    checkIn={checkIn}
-                    checkOut={checkOut}
-                    onSelectDate={handleDatesSelect}
-                    onClose={() => {}}
-                    bookedDates={[]}
-                  />
-                </div>
+            {/* Step Selector / Tabs */}
+            <div className="flex bg-white px-4 py-2 shadow-sm gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveField('where')}
+                className={`flex-1 py-2 text-center rounded-xl text-xs font-semibold transition-all duration-200 ${
+                  activeField === 'where'
+                    ? 'bg-black text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                1. Where
+                <span className="block text-[10px] font-normal truncate max-w-[100px] mx-auto opacity-80">
+                  {destination ? destination.label : 'Anywhere'}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveField('when')}
+                className={`flex-1 py-2 text-center rounded-xl text-xs font-semibold transition-all duration-200 ${
+                  activeField === 'when'
+                    ? 'bg-black text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                2. When
+                <span className="block text-[10px] font-normal truncate max-w-[100px] mx-auto opacity-80">
+                  {checkIn && checkOut 
+                    ? `${dayjs(checkIn).format('DD MMM')} - ${dayjs(checkOut).format('DD MMM')}` 
+                    : 'Any week'}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveField('who')}
+                className={`flex-1 py-2 text-center rounded-xl text-xs font-semibold transition-all duration-200 ${
+                  activeField === 'who'
+                    ? 'bg-black text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                3. Who
+                <span className="block text-[10px] font-normal truncate max-w-[100px] mx-auto opacity-80">
+                  {whoLabel() === 'Add guest' ? 'Add guests' : whoLabel()}
+                </span>
+              </button>
+            </div>
 
-                {/* Who */}
-                <div>
-                  <p className="text-[12px] font-semibold mb-2">Who</p>
-                  <Who
-                    isOpen={true}
-                    values={guests}
-                    onChange={handleGuestsChange}
-                    onClose={() => {}}
-                  />
-                </div>
+            {/* Active Step Panel Content */}
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col justify-between">
+              <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex-grow overflow-y-auto">
+                {activeField === 'where' && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 mb-3">Where are you going?</h3>
+                    <SuggestedDestinations onSelect={(dest) => { 
+                      handleDestinationSelect(dest); 
+                      setActiveField('when'); 
+                    }} />
+                  </div>
+                )}
 
-                {/* Search + Close */}
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={handleSearch}
-                    className="flex-1 bg-[#e94a3f] text-white py-2.5 rounded-full text-[14px] font-semibold"
-                  >
-                    Search
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeAllPanels}
-                    className="px-4 py-2.5 rounded-full border text-[14px] font-medium"
-                  >
-                    Close
-                  </button>
-                </div>
+                {activeField === 'when' && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 mb-3">When's your trip?</h3>
+                    <Calendar
+                      checkIn={checkIn}
+                      checkOut={checkOut}
+                      onSelectDate={handleDatesSelect}
+                      onClose={() => setActiveField('who')}
+                      bookedDates={[]}
+                    />
+                  </div>
+                )}
+
+                {activeField === 'who' && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 mb-3">Who is coming?</h3>
+                    <Who
+                      isOpen={true}
+                      values={guests}
+                      onChange={handleGuestsChange}
+                      onClose={() => {}}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Search Actions */}
+              <div className="mt-4 bg-white p-3 rounded-2xl shadow-md border border-gray-100 flex gap-3">
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="flex-grow bg-[#e94a3f] text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-red-200 active:scale-95 transition-transform"
+                >
+                  Search Stays
+                </button>
               </div>
             </div>
           </motion.div>
