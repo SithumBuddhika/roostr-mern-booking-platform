@@ -2037,7 +2037,7 @@
 
 
 // src/pages/RoomDetails.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -2389,6 +2389,22 @@ const RoomDetails = () => {
       ? room.galleryImages.map((img, idx) => getImageUrl(img, [room2, room3, room4, room5][idx % 4]))
       : [room2, room3, room4, room5];
 
+  const allImages = useMemo(() => {
+    return [mainImage, ...galleryImages];
+  }, [mainImage, galleryImages]);
+
+  const [activeMobileImageIndex, setActiveMobileImageIndex] = useState(0);
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    setActiveMobileImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    setActiveMobileImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
   const selectedHighlights =
     room?.highlights && room.highlights.length > 0
       ? HIGHLIGHT_CONFIG.filter((h) => room.highlights.includes(h.id))
@@ -2469,13 +2485,44 @@ const RoomDetails = () => {
           {/* HERO IMAGES */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
             <div className="md:col-span-2">
-              <div className="w-full h-[220px] md:h-[360px] rounded-xl overflow-hidden bg-gray-100">
+              <div className="relative w-full h-[220px] md:h-[360px] rounded-xl overflow-hidden bg-gray-100 group">
+                {/* Desktop static cover / Mobile carousel active image */}
                 <img
-                  src={mainImage}
+                  src={allImages[activeMobileImageIndex]}
                   alt="room main"
-                  className="w-full h-full object-cover object-center"
-                  onError={(e) => (e.currentTarget.src = room1)}
+                  className="w-full h-full object-cover object-center transition-all duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = [room1, room2, room3, room4, room5][activeMobileImageIndex] || room1;
+                  }}
                 />
+
+                {/* Mobile-only Arrow Controls & Badge */}
+                <div className="md:hidden">
+                  {/* Prev Button */}
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                  >
+                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                  >
+                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {/* Image Counter Badge */}
+                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-[2px]">
+                    {activeMobileImageIndex + 1} / {allImages.length}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="hidden md:grid grid-cols-2 gap-2 h-[360px]">
