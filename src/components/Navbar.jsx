@@ -391,6 +391,35 @@ const Navbar = () => {
   const [selected, setSelected] = useState('home');
   const navigate = useNavigate();
 
+  const [currentUser, setCurrentUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const readUser = () => {
+      try {
+        const stored =
+          localStorage.getItem("roostrUser") ||
+          localStorage.getItem("roostr_user") ||
+          localStorage.getItem("user") ||
+          localStorage.getItem("currentUser");
+        if (stored) {
+          setCurrentUser(JSON.parse(stored));
+        } else {
+          setCurrentUser(null);
+        }
+      } catch (err) {
+        setCurrentUser(null);
+      }
+    };
+    readUser();
+    window.addEventListener("storage", readUser);
+    // Poll localstorage periodically in case navigation doesn't trigger storage event locally
+    const interval = setInterval(readUser, 1000);
+    return () => {
+      window.removeEventListener("storage", readUser);
+      clearInterval(interval);
+    };
+  }, []);
+
   // which field is currently active: 'where' | 'when' | 'who' | null
   const [activeField, setActiveField] = useState(null);
 
@@ -555,7 +584,21 @@ const Navbar = () => {
           <span className="text-sm font-medium hidden md:inline">
             <Link to="/become-host">Become a host</Link>
           </span>
-          <img src={user} alt="user" className="h-8 w-8 rounded-full bg-[#1a1d20]" />
+          {currentUser ? (
+            currentUser.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt="User Profile"
+                className="h-8 w-8 rounded-full object-cover border border-gray-200"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                {(currentUser.name || "U")[0].toUpperCase()}
+              </div>
+            )
+          ) : (
+            <img src={user} alt="user" className="h-8 w-8 rounded-full bg-[#1a1d20]" />
+          )}
           <BurgerMenu />
         </div>
       </div>

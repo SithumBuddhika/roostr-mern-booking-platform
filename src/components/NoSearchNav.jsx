@@ -9,6 +9,33 @@ import BurgerMenu from "./BurgerMenu"; // adjust path if needed
 
 const NoSearchNav = () => {
   const [selected, setSelected] = useState("home");
+  const [currentUser, setCurrentUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const readUser = () => {
+      try {
+        const stored =
+          localStorage.getItem("roostrUser") ||
+          localStorage.getItem("roostr_user") ||
+          localStorage.getItem("user") ||
+          localStorage.getItem("currentUser");
+        if (stored) {
+          setCurrentUser(JSON.parse(stored));
+        } else {
+          setCurrentUser(null);
+        }
+      } catch (err) {
+        setCurrentUser(null);
+      }
+    };
+    readUser();
+    window.addEventListener("storage", readUser);
+    const interval = setInterval(readUser, 1000);
+    return () => {
+      window.removeEventListener("storage", readUser);
+      clearInterval(interval);
+    };
+  }, []);
 
   const navItems = [
     { id: "home", label: "Homes", icon: home },
@@ -19,8 +46,6 @@ const NoSearchNav = () => {
   const handleLogoClick = () => {
     // Hard refresh back to home (same behaviour as updated JustNav)
     window.location.href = "/";
-    // If you ever want SPA-style nav instead, use:
-    // navigate("/");
   };
 
   return (
@@ -67,12 +92,31 @@ const NoSearchNav = () => {
 
         {/* Right - Controls */}
         <div className="flex items-center space-x-3 md:space-x-5">
-          <span className="text-sm font-medium hidden md:inline">Become a host</span>
-          <img
-            src={user}
-            alt="user"
-            className="h-8 w-8 rounded-full bg-[#1a1d20]"
-          />
+          <span 
+            className="text-sm font-medium hidden md:inline cursor-pointer hover:text-gray-700 transition"
+            onClick={() => window.location.href = "/become-host"}
+          >
+            Become a host
+          </span>
+          {currentUser ? (
+            currentUser.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt="User Profile"
+                className="h-8 w-8 rounded-full object-cover border border-gray-200"
+              />
+            ) : (
+              <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                {(currentUser.name || "U")[0].toUpperCase()}
+              </div>
+            )
+          ) : (
+            <img
+              src={user}
+              alt="user"
+              className="h-8 w-8 rounded-full bg-[#1a1d20]"
+            />
+          )}
           <BurgerMenu /> {/* interactive menu */}
         </div>
       </div>

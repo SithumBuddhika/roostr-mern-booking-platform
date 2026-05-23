@@ -1247,7 +1247,6 @@ const Profile = () => {
 
       const col1Width = 260;
       const col2Width = 260;
-      const col3Width = contentWidth - col1Width - col2Width;
 
       const col1X = margin;
       const col2X = margin + col1Width;
@@ -1739,104 +1738,127 @@ const Profile = () => {
                       return (
                         <div
                           key={t._id}
-                          className="bg-white rounded-[16px] shadow-[0_6px_22px_rgba(0,0,0,0.12)] w-full max-w-[640px] px-4 py-5 sm:px-6 sm:py-6"
+                          className="bg-white rounded-[16px] shadow-[0_6px_22px_rgba(0,0,0,0.08)] w-full max-w-[640px] px-4 py-5 sm:px-6 sm:py-6 border border-gray-100"
                         >
-                          <div className="flex flex-col sm:grid sm:grid-cols-[64px_1fr_1fr_1fr] gap-4 sm:gap-6 items-start">
-                            <img
-                              src={tripImg}
-                              alt="Room"
-                              className="w-[64px] h-[64px] rounded-[10px] object-cover"
-                              onError={(e) => (e.currentTarget.src = roomPlaceholder)}
-                            />
-
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-0.5">Reservation code</div>
-                              <div className="text-[16px] font-semibold tracking-tight">
-                                {t.reservationCode}
-                              </div>
-                              <div className="text-[11px] uppercase text-gray-500 mt-1">
-                                {t.status?.toUpperCase()}
-                              </div>
-                            </div>
-
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-0.5">Check In</div>
-                              <div className="text-[13px]">
-                                {checkIn.toLocaleDateString("en-US", {
-                                  month: "long",
-                                  day: "numeric",
-                                  year: "numeric",
-                                })}
-                              </div>
-                            </div>
-
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-0.5">Check Out</div>
-                              <div className="text-[13px]">
-                                {checkOut.toLocaleDateString("en-US", {
-                                  month: "long",
-                                  day: "numeric",
-                                  year: "numeric",
-                                })}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5 mt-6">
-                            {[
-                              { label: "Adults", value: t.guests?.adults ?? 1 },
-                              { label: "Children", value: t.guests?.children ?? 0 },
-                              { label: "Infants", value: t.guests?.infants ?? 0 },
-                              { label: "Pets", value: t.guests?.pets ?? 0 },
-                            ].map((item) => (
-                              <div key={item.label}>
-                                <div className="text-gray-500 text-[12px] mb-1">{item.label}</div>
-                                <div className="text-[18px] font-semibold">
-                                  {String(item.value).padStart(2, "0")}
+                          <div className="flex flex-col gap-5">
+                            {/* Card Header (Image + Reservation details + Dates) */}
+                            <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[64px_1.2fr_1fr_1fr] sm:gap-6 items-start pb-4 border-b border-gray-100">
+                              <div className="flex items-center gap-4 w-full sm:w-auto">
+                                <img
+                                  src={tripImg}
+                                  alt="Room"
+                                  className="w-[64px] h-[64px] rounded-[10px] object-cover flex-shrink-0"
+                                  onError={(e) => (e.currentTarget.src = roomPlaceholder)}
+                                />
+                                {/* Mobile-only reservation header details */}
+                                <div className="sm:hidden flex-grow">
+                                  <div className="text-gray-400 text-[11px] mb-0.5">Reservation code</div>
+                                  <div className="text-[15px] font-bold tracking-tight text-gray-800">
+                                    {t.reservationCode}
+                                  </div>
+                                  <div className="inline-block text-[9px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-1 border border-emerald-100">
+                                    {t.status?.toUpperCase()}
+                                  </div>
                                 </div>
                               </div>
-                            ))}
-                          </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6 text-[13px]">
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-1">Host Name</div>
-                              <div className="font-medium">{room.hostName || "Roostr Host"}</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-1">Host Email</div>
-                              <div className="font-medium truncate">{room.hostEmail || "—"}</div>
-                            </div>
-
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-1">
-                                Host Contact Number
+                              {/* Desktop-only reservation code info */}
+                              <div className="hidden sm:block">
+                                <div className="text-gray-500 text-[12px] mb-0.5">Reservation code</div>
+                                <div className="text-[16px] font-semibold tracking-tight text-gray-800">
+                                  {t.reservationCode}
+                                </div>
+                                <div className="inline-block text-[11px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded mt-1 border border-emerald-100">
+                                  {t.status?.toUpperCase()}
+                                </div>
                               </div>
-                              <div className="font-medium">{room.hostPhone || "—"}</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-500 text-[12px] mb-1">Total Payment</div>
-                              <div className="text-[14px] font-semibold">
-                                ${Number(t.totalPrice || 0).toFixed(2)}
+
+                              {/* Dates: grid 2-cols on mobile, separate grid cells on desktop */}
+                              <div className="grid grid-cols-2 gap-4 w-full sm:contents">
+                                <div>
+                                  <div className="text-gray-500 text-[12px] mb-0.5">Check In</div>
+                                  <div className="text-[13px] font-semibold text-gray-800">
+                                    {checkIn.toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })}
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <div className="text-gray-500 text-[12px] mb-0.5">Check Out</div>
+                                  <div className="text-[13px] font-semibold text-gray-800">
+                                    {checkOut.toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    })}
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <div className="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
-                            <button
-                              onClick={() => handleCancelBooking(t._id)}
-                              className="text-[13px] flex items-center gap-2"
-                            >
-                              <img src={deleteIcon} className="w-[16px] h-[16px]" alt="" />
-                              Cancel Booking
-                            </button>
-                            <button
-                              onClick={() => handleDownloadReceipt(t)}
-                              className="text-[13px] flex items-center gap-2"
-                            >
-                              <img src={downloadIcon} className="w-[16px] h-[16px]" alt="" />
-                              Download Receipt
-                            </button>
+                            {/* Guests Segment */}
+                            <div>
+                              <h4 className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-2">Guests</h4>
+                              <div className="grid grid-cols-4 gap-2 bg-gray-50 p-3 rounded-xl">
+                                {[
+                                  { label: "Adults", value: t.guests?.adults ?? 1 },
+                                  { label: "Children", value: t.guests?.children ?? 0 },
+                                  { label: "Infants", value: t.guests?.infants ?? 0 },
+                                  { label: "Pets", value: t.guests?.pets ?? 0 },
+                                ].map((item) => (
+                                  <div key={item.label} className="text-center sm:text-left">
+                                    <div className="text-gray-450 text-[11px]">{item.label}</div>
+                                    <div className="text-[15px] font-bold text-gray-800">
+                                      {String(item.value).padStart(2, "0")}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Host details & Payment (Grid for mobile and desktop) */}
+                            <div className="grid grid-cols-2 gap-4 text-[13px] pt-1">
+                              <div>
+                                <div className="text-gray-500 text-[11px] mb-0.5">Host Name</div>
+                                <div className="font-semibold text-gray-800">{room.hostName || "Roostr Host"}</div>
+                              </div>
+                              <div>
+                                <div className="text-gray-500 text-[11px] mb-0.5">Total Payment</div>
+                                <div className="text-[15px] font-bold text-black">
+                                  ${Number(t.totalPrice || 0).toFixed(2)}
+                                </div>
+                              </div>
+
+                              <div className="col-span-2 sm:col-span-1">
+                                <div className="text-gray-500 text-[11px] mb-0.5">Host Email</div>
+                                <div className="font-medium text-gray-700 truncate">{room.hostEmail || "—"}</div>
+                              </div>
+                              <div className="col-span-2 sm:col-span-1">
+                                <div className="text-gray-500 text-[11px] mb-0.5">Host Contact Number</div>
+                                <div className="font-medium text-gray-700">{room.hostPhone || "—"}</div>
+                              </div>
+                            </div>
+
+                            {/* Actions footer */}
+                            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-row gap-3 items-center justify-between w-full">
+                              <button
+                                onClick={() => handleCancelBooking(t._id)}
+                                className="text-[13px] flex items-center gap-2 font-medium text-red-500 hover:text-red-600 transition-colors"
+                              >
+                                <img src={deleteIcon} className="w-[16px] h-[16px] opacity-80" alt="" />
+                                Cancel Booking
+                              </button>
+                              <button
+                                onClick={() => handleDownloadReceipt(t)}
+                                className="text-[13px] flex items-center gap-2 font-medium text-gray-700 hover:text-black transition-colors"
+                              >
+                                <img src={downloadIcon} className="w-[16px] h-[16px] opacity-80" alt="" />
+                                Download Receipt
+                              </button>
+                            </div>
                           </div>
                         </div>
                       );

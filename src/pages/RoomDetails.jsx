@@ -2135,7 +2135,6 @@ import selfCheckService from "../assets/roomicons/self-check-inn.png";
 
 // Host / customer / misc
 import hostImg from "../assets/roomimages/host.png";
-import customerImg from "../assets/roomimages/customer.png";
 import dropdownIcon from "../assets/roomimages/dropdownIcon.png";
 import plusIcon from "../assets/roomimages/plus.png";
 import minusIcon from "../assets/roomimages/minus.png";
@@ -2366,13 +2365,14 @@ const RoomDetails = () => {
     fetchRoom();
   }, [id]);
 
+  const roomId = room?._id;
   // fetch bookings -> booked dates
   useEffect(() => {
-    if (!room?._id) return;
+    if (!roomId) return;
 
     const fetchRoomBookings = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/bookings/room/${room._id}`);
+        const res = await axios.get(`${API_BASE}/api/bookings/room/${roomId}`);
         const bookings = res.data.bookings || [];
 
         const datesSet = new Set();
@@ -2395,7 +2395,7 @@ const RoomDetails = () => {
     };
 
     fetchRoomBookings();
-  }, [room?._id]);
+  }, [roomId]);
 
   // ✅ keep adults >= 1
   const updateGuestCount = (type, increment) => {
@@ -2456,10 +2456,11 @@ const RoomDetails = () => {
   // ✅ Images: use backend if exists, else fallbacks
   const mainImage = getImageUrl(room?.coverImage, room1);
 
-  const galleryImages =
-    Array.isArray(room?.galleryImages) && room.galleryImages.length > 0
+  const galleryImages = useMemo(() => {
+    return Array.isArray(room?.galleryImages) && room.galleryImages.length > 0
       ? room.galleryImages.map((img, idx) => getImageUrl(img, [room2, room3, room4, room5][idx % 4]))
       : [room2, room3, room4, room5];
+  }, [room?.galleryImages]);
 
   const allImages = useMemo(() => {
     return [mainImage, ...galleryImages];
@@ -2778,9 +2779,17 @@ const RoomDetails = () => {
                   {roomReviews.slice(0, 4).map((review) => (
                     <div key={review._id} className="mb-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-sm">
-                          {(review.userId?.name || "G")[0].toUpperCase()}
-                        </div>
+                        {review.userId?.avatar ? (
+                          <img
+                            src={review.userId.avatar}
+                            alt={review.userId.name}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-sm">
+                            {(review.userId?.name || "G")[0].toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <p className="text-[14px] font-semibold leading-4">{review.userId?.name || "Guest"}</p>
                           <p className="text-[13px] text-gray-600 leading-4">{review.userId?.country || "Roostr Member"}</p>
@@ -3109,9 +3118,17 @@ const ReviewsModal = ({ isOpen, onClose, reviews, roomTitle }) => {
             reviews.map((review) => (
               <div key={review._id} className="border-b pb-4 last:border-0 last:pb-0">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-sm">
-                    {(review.userId?.name || "G")[0].toUpperCase()}
-                  </div>
+                  {review.userId?.avatar ? (
+                    <img
+                      src={review.userId.avatar}
+                      alt={review.userId.name}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-sm">
+                      {(review.userId?.name || "G")[0].toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <p className="text-[14px] font-semibold leading-4">{review.userId?.name || "Guest"}</p>
                     <p className="text-[12px] text-gray-500 leading-4">{review.userId?.country || "Roostr Member"}</p>

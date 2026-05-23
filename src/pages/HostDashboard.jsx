@@ -820,13 +820,6 @@ const HostDashboard = () => {
     const value = monthlyRevenue[d.getMonth()] || 0;
     lastSixMonths.push({ label, value });
   }
-  const maxRevenue = Math.max(...lastSixMonths.map((m) => m.value), 0);
-
-  const barHeights = lastSixMonths.map((m) => {
-    if (!maxRevenue || m.value <= 0) return 10; // tiny bar if no data
-    // between 30% and 90% for visibility
-    return 30 + (m.value / maxRevenue) * 60;
-  });
 
   const avgNightlyRate =
     totalBookings > 0 ? totalEarnings / totalBookings : 0;
@@ -1155,9 +1148,17 @@ const HostDashboard = () => {
                           isSelected ? "bg-[#fff5f5] border-l-4 border-[#FF5A5F]" : "hover:bg-gray-50/80 bg-white"
                         }`}
                       >
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
-                          {(review.userId?.name || "G")[0].toUpperCase()}
-                        </div>
+                        {review.userId?.avatar ? (
+                          <img
+                            src={review.userId.avatar}
+                            alt={review.userId.name}
+                            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                            {(review.userId?.name || "G")[0].toUpperCase()}
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-1">
                             <span className="text-[12px] font-semibold text-gray-800 truncate">
@@ -1226,9 +1227,17 @@ const HostDashboard = () => {
                       <div className="flex-1 p-5 overflow-y-auto space-y-4">
                         {/* Guest comment card */}
                         <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
-                            {(activeReview.userId?.name || "G")[0].toUpperCase()}
-                          </div>
+                          {activeReview.userId?.avatar ? (
+                            <img
+                              src={activeReview.userId.avatar}
+                              alt={activeReview.userId.name}
+                              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                              {(activeReview.userId?.name || "G")[0].toUpperCase()}
+                            </div>
+                          )}
                           <div className="bg-gray-50 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] border border-gray-100">
                             <div className="flex items-baseline gap-2 mb-1">
                               <span className="text-[12px] font-semibold text-gray-800">
@@ -1260,9 +1269,17 @@ const HostDashboard = () => {
                                 {activeReview.reply}
                               </p>
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1ecc61] to-[#12a34c] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
-                              H
-                            </div>
+                            {user?.avatar ? (
+                              <img
+                                src={user.avatar}
+                                alt="Host"
+                                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1ecc61] to-[#12a34c] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                                {(user?.name || "H")[0].toUpperCase()}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
