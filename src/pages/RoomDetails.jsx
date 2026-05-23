@@ -2037,7 +2037,7 @@
 
 
 // src/pages/RoomDetails.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -2230,13 +2230,6 @@ const AMENITY_CONFIG = [
   { id: "longTermStay", img: longTermStay, label: "Long-term stays allowed", category: "Services" },
 ];
 
-const reviews = [
-  { name: "Youssef", location: "Cairo, Egypt", date: "1 week ago", stay: "Stayed a few nights", stars: 5, comment: "Great location , super clean , and great host" },
-  { name: "Adam", location: "Mina, Lebanon", date: "May 2025", stay: "Stayed in one night", stars: 4, comment: "We had a great stay! The place was exactly as described. Comfortable, well maintained, and in a great location. One of the things I appreciated most was the cleanliness; everything was spotless and well taken care of. Highly recommend this place and would definitely stay again." },
-  { name: "Adam", location: "Mina, Lebanon", date: "May 2025", stay: "Stayed in one night", stars: 5, comment: "The place is amazing really feels like home. The host is a great, very friendly person. I really suggest the stay there ." },
-  { name: "Adam", location: "Mina, Lebanon", date: "May 2025", stay: "Stayed in one night", stars: 4, comment: "The place was better than the picture. Also , Mona is so responsive" },
-];
-
 const RoomDetails = () => {
   const { id } = useParams();
 
@@ -2256,7 +2249,86 @@ const RoomDetails = () => {
   const [showAmenitiesModal, setShowAmenitiesModal] = useState(false);
   const [bookedDates, setBookedDates] = useState([]);
 
+  // Reviews integration
+  const [roomReviews, setRoomReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [newRating, setNewRating] = useState(0);
+  const [newComment, setNewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showReviewsModal, setShowReviewsModal] = useState(false);
+
   const navigate = useNavigate();
+
+  const fetchReviews = useCallback(async () => {
+    if (!id) return;
+    try {
+      setLoadingReviews(true);
+      const res = await axios.get(`${API_BASE}/api/reviews/room/${id}`);
+      setRoomReviews(res.data.reviews || []);
+    } catch (err) {
+      console.error("Failed to load reviews:", err);
+    } finally {
+      setLoadingReviews(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  const handleSubmitReview = async () => {
+    const token = localStorage.getItem("roostrToken");
+    if (!token) {
+      setSubmitError("You must be logged in to submit feedback.");
+      return;
+    }
+    if (newRating < 1 || newRating > 5) {
+      setSubmitError("Please select a rating between 1 and 5 stars.");
+      return;
+    }
+    if (!newComment.trim()) {
+      setSubmitError("Please write a comment.");
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      setSubmitError("");
+      setSubmitSuccess(false);
+
+      await axios.post(
+        `${API_BASE}/api/reviews`,
+        {
+          roomId: id,
+          rating: newRating,
+          comment: newComment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSubmitSuccess(true);
+      setNewRating(0);
+      setNewComment("");
+
+      // Refresh reviews
+      fetchReviews();
+
+      // Fetch room again to get updated rating and reviewCount
+      const roomRes = await axios.get(`${API_BASE}/api/rooms/${id}`);
+      setRoom(roomRes.data?.room || roomRes.data);
+    } catch (err) {
+      console.error("Error submitting review:", err);
+      setSubmitError(err.response?.data?.message || "Failed to submit review.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   // close guest dropdown outside click
   useEffect(() => {
@@ -2389,6 +2461,22 @@ const RoomDetails = () => {
       ? room.galleryImages.map((img, idx) => getImageUrl(img, [room2, room3, room4, room5][idx % 4]))
       : [room2, room3, room4, room5];
 
+  const allImages = useMemo(() => {
+    return [mainImage, ...galleryImages];
+  }, [mainImage, galleryImages]);
+
+  const [activeMobileImageIndex, setActiveMobileImageIndex] = useState(0);
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    setActiveMobileImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    setActiveMobileImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+  };
+
   const selectedHighlights =
     room?.highlights && room.highlights.length > 0
       ? HIGHLIGHT_CONFIG.filter((h) => room.highlights.includes(h.id))
@@ -2443,8 +2531,84 @@ const RoomDetails = () => {
   if (loadingRoom) {
     return (
       <div className="bg-[#f3f8fe] min-h-screen">
-        <div className="max-w-[1280px] mx-auto px-6 pt-10 text-sm text-gray-700">
-          Loading room…
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-6 pb-20">
+          {/* Title skeleton */}
+          <div className="h-6 w-[60%] bg-gray-200 rounded-md mb-4 animate-pulse" />
+
+          {/* Hero image skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6 animate-pulse">
+            <div className="md:col-span-2">
+              <div className="w-full h-[220px] md:h-[360px] rounded-xl bg-gray-200" />
+            </div>
+            <div className="hidden md:grid grid-cols-2 gap-2 h-[360px]">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="rounded-xl bg-gray-200" />
+              ))}
+            </div>
+          </div>
+
+          {/* Two-column layout skeleton */}
+          <div className="flex flex-col lg:flex-row gap-10 mt-4">
+            {/* Left column */}
+            <div className="flex-1 min-w-0 space-y-4 animate-pulse">
+              <div className="h-5 w-[70%] bg-gray-200 rounded" />
+              <div className="h-4 w-[40%] bg-gray-100 rounded" />
+              <div className="h-4 w-[30%] bg-gray-100 rounded" />
+
+              {/* Host row */}
+              <div className="flex items-center gap-3 mt-4">
+                <div className="h-10 w-10 rounded-full bg-gray-200" />
+                <div className="space-y-1.5">
+                  <div className="h-3 w-28 bg-gray-200 rounded" />
+                  <div className="h-2.5 w-20 bg-gray-100 rounded" />
+                </div>
+              </div>
+
+              {/* Perks skeleton */}
+              <div className="space-y-3 mt-6">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="h-6 w-6 rounded bg-gray-200 flex-shrink-0" />
+                    <div className="space-y-1 flex-1">
+                      <div className="h-3.5 w-[50%] bg-gray-200 rounded" />
+                      <div className="h-3 w-[80%] bg-gray-100 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Description skeleton */}
+              <div className="space-y-2 mt-6">
+                <div className="h-3 w-full bg-gray-100 rounded" />
+                <div className="h-3 w-full bg-gray-100 rounded" />
+                <div className="h-3 w-[90%] bg-gray-100 rounded" />
+                <div className="h-3 w-[75%] bg-gray-100 rounded" />
+              </div>
+            </div>
+
+            {/* Right column — booking sidebar skeleton */}
+            <div className="w-full lg:w-[320px] animate-pulse">
+              <div className="p-5 rounded-xl bg-white shadow-lg space-y-3">
+                <div className="h-4 w-[50%] bg-gray-200 rounded" />
+                <div className="grid grid-cols-2 gap-0 border rounded-md overflow-hidden">
+                  <div className="border-r px-3 py-3 space-y-1">
+                    <div className="h-2.5 w-14 bg-gray-200 rounded" />
+                    <div className="h-3.5 w-20 bg-gray-100 rounded" />
+                  </div>
+                  <div className="px-3 py-3 space-y-1">
+                    <div className="h-2.5 w-16 bg-gray-200 rounded" />
+                    <div className="h-3.5 w-20 bg-gray-100 rounded" />
+                  </div>
+                </div>
+                <div className="border rounded-md px-3 py-3 space-y-1">
+                  <div className="h-2.5 w-12 bg-gray-200 rounded" />
+                  <div className="h-3.5 w-16 bg-gray-100 rounded" />
+                </div>
+                <div className="h-10 w-full bg-gray-200 rounded-md mt-2" />
+                <div className="h-3 w-[60%] bg-gray-100 rounded mx-auto" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -2463,22 +2627,53 @@ const RoomDetails = () => {
   return (
     <>
       <div className="bg-[#f3f8fe] min-h-screen shadow-[0_8px_40px_rgba(0,0,0,0.1)]">
-        <div className="max-w-[1280px] mx-auto px-6 pt-6 pb-20 text-[#222222] font-sans">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-6 pb-20 text-[#222222] font-sans">
           <h2 className="text-xl font-semibold mb-2">{room.title || "Roostr Listing"}</h2>
 
           {/* HERO IMAGES */}
-          <div className="grid grid-cols-3 gap-2 mb-6">
-            <div className="col-span-2">
-              <div className="w-full h-[360px] rounded-xl overflow-hidden bg-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6">
+            <div className="md:col-span-2">
+              <div className="relative w-full h-[220px] md:h-[360px] rounded-xl overflow-hidden bg-gray-100 group">
+                {/* Desktop static cover / Mobile carousel active image */}
                 <img
-                  src={mainImage}
+                  src={allImages[activeMobileImageIndex]}
                   alt="room main"
-                  className="w-full h-full object-cover object-center"
-                  onError={(e) => (e.currentTarget.src = room1)}
+                  className="w-full h-full object-cover object-center transition-all duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = [room1, room2, room3, room4, room5][activeMobileImageIndex] || room1;
+                  }}
                 />
+
+                {/* Mobile-only Arrow Controls & Badge */}
+                <div className="md:hidden">
+                  {/* Prev Button */}
+                  <button
+                    onClick={handlePrevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                  >
+                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={handleNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                  >
+                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+
+                  {/* Image Counter Badge */}
+                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-[11px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-[2px]">
+                    {activeMobileImageIndex + 1} / {allImages.length}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2 h-[360px]">
+            <div className="hidden md:grid grid-cols-2 gap-2 h-[360px]">
               {galleryImages.slice(0, 4).map((img, i) => (
                 <div key={i} className="w-full h-full rounded-xl overflow-hidden bg-gray-100">
                   <img
@@ -2499,9 +2694,16 @@ const RoomDetails = () => {
               <p className="text-[20px] mb-2 font-medium">{headlineText}</p>
               <p className="text-sm mb-4 text-gray-700">{configLine}</p>
 
-              <div className="text-[17px] font-semibold mb-6">
-                ★ 5.0 <span className="font-normal text-[16px]">26 reviews</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowReviewsModal(true)}
+                className="text-[17px] font-semibold mb-6 flex items-center hover:underline focus:outline-none"
+              >
+                ★ {room.rating ? Number(room.rating).toFixed(1) : "5.0"}
+                <span className="font-normal text-[16px] ml-1">
+                  · {room.reviewCount || 0} reviews
+                </span>
+              </button>
 
               <div className="flex items-center space-x-3 mb-6">
                 <img src={hostImg} alt="host" className="h-10 w-10 rounded-full" />
@@ -2537,7 +2739,7 @@ const RoomDetails = () => {
               <hr className="mb-6" />
               <div>
                 <h3 className="text-[15px] font-medium mb-4">What this place offers</h3>
-                <div className="grid grid-cols-2 gap-y-3 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 text-sm">
                   {amenitiesToShow.map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
                       {item.img && <img src={item.img} alt={item.label} className="h-7 w-7 object-contain" />}
@@ -2556,31 +2758,108 @@ const RoomDetails = () => {
 
               {/* REVIEWS */}
               <hr className="my-8" />
-              <div className="text-[17px] font-semibold mb-6">
-                ★ 5.0 <span className="font-normal text-[16px] ml-1">26 reviews</span>
-              </div>
-              <div className="grid grid-cols-2 gap-x-10 gap-y-6">
-                {reviews.map((review, i) => (
-                  <div key={i} className="mb-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <img src={customerImg} alt={review.name} className="h-10 w-10 rounded-full" />
-                      <div>
-                        <p className="text-[14px] font-semibold leading-4">{review.name}</p>
-                        <p className="text-[13px] text-gray-600 leading-4">{review.location}</p>
+              <button
+                type="button"
+                onClick={() => setShowReviewsModal(true)}
+                className="text-[17px] font-semibold mb-6 flex items-center hover:underline focus:outline-none"
+              >
+                ★ {room.rating ? Number(room.rating).toFixed(1) : "5.0"}
+                <span className="font-normal text-[16px] ml-1">
+                  · {room.reviewCount || 0} reviews
+                </span>
+              </button>
+
+              {loadingReviews ? (
+                <p className="text-sm text-gray-500">Loading reviews...</p>
+              ) : roomReviews.length === 0 ? (
+                <p className="text-sm text-gray-500">No reviews yet. Be the first to leave a feedback!</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                  {roomReviews.slice(0, 4).map((review) => (
+                    <div key={review._id} className="mb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-sm">
+                          {(review.userId?.name || "G")[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-[14px] font-semibold leading-4">{review.userId?.name || "Guest"}</p>
+                          <p className="text-[13px] text-gray-600 leading-4">{review.userId?.country || "Roostr Member"}</p>
+                        </div>
                       </div>
+                      <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1">
+                        <div className="flex text-[#FF5A5F] text-[15px]">
+                          {Array.from({ length: review.rating }, (_, idx) => (
+                            <span key={idx}>★</span>
+                          ))}
+                        </div>
+                        <span>·</span>
+                        <span>{dayjs(review.createdAt).format("MMM YYYY")}</span>
+                      </div>
+                      <p className="text-[14px] text-[#222] leading-snug whitespace-pre-line">
+                        {review.comment}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1">
-                      <div className="flex text-black text-[16px]">
-                        {Array.from({ length: review.stars }, (_, idx) => (
-                          <span key={idx}>★</span>
+                  ))}
+                </div>
+              )}
+
+              {roomReviews.length > 4 && (
+                <button
+                  type="button"
+                  onClick={() => setShowReviewsModal(true)}
+                  className="mt-4 px-4 py-1.5 bg-[#e4e4e4] rounded-lg text-sm font-medium"
+                >
+                  Show all {roomReviews.length} reviews
+                </button>
+              )}
+
+              {/* FEEDBACK SUBMISSION SECTION */}
+              <div className="bg-white border rounded-xl p-5 mt-8 shadow-sm">
+                <h3 className="text-[16px] font-semibold mb-3">Share your feedback</h3>
+                {localStorage.getItem("roostrToken") ? (
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="text-[13px] text-gray-600 font-medium">Rating:</span>
+                      <div className="flex gap-1 text-[20px] text-gray-300">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setNewRating(star)}
+                            className={`hover:scale-110 transition ${
+                              star <= newRating ? "text-[#FF5A5F]" : "text-gray-300"
+                            }`}
+                          >
+                            ★
+                          </button>
                         ))}
                       </div>
-                      <span>{review.date}</span>
-                      <span className="text-gray-500">{review.stay}</span>
                     </div>
-                    <p className="text-[14px] text-[#222] leading-snug whitespace-pre-line">{review.comment}</p>
+                    <div className="mb-4">
+                      <textarea
+                        placeholder="Tell us about your experience..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FF5A5F]"
+                        rows={3}
+                      />
+                    </div>
+                    {submitError && <p className="text-[12px] text-red-600 mb-3">{submitError}</p>}
+                    {submitSuccess && <p className="text-[12px] text-green-600 mb-3">Feedback submitted successfully!</p>}
+                    <button
+                      type="button"
+                      onClick={handleSubmitReview}
+                      disabled={submittingReview || !newRating || !newComment.trim()}
+                      className="px-4 py-2 bg-[#FF5A5F] hover:bg-[#e04141] text-white text-[13px] font-semibold rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submittingReview ? "Submitting..." : "Submit feedback"}
+                    </button>
                   </div>
-                ))}
+                ) : (
+                  <p className="text-sm text-gray-500 italic">
+                    Please log in to submit a review and rate this place.
+                  </p>
+                )}
               </div>
 
               <hr className="my-10" />
@@ -2593,7 +2872,7 @@ const RoomDetails = () => {
             </div>
 
             {/* RIGHT COLUMN – BOOKING BOX */}
-            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit sticky top-32 self-start">
+            <div className="w-full lg:w-[320px] p-4 shadow-xl rounded-xl border bg-white h-fit lg:sticky lg:top-32 self-start relative">
               <h3 className="text-[15px] font-semibold mb-3">Add dates for prices</h3>
 
               <div
@@ -2621,41 +2900,43 @@ const RoomDetails = () => {
               </div>
 
               {calendarOpen && (
-                <Calendar
-                  checkIn={checkInDate}
-                  checkOut={checkOutDate}
-                  bookedDates={bookedDates}
-                  onSelectDate={(ci, co) => {
-                    // full range chosen
-                    if (ci && co) {
-                      setCheckInDate(ci);
-                      setCheckOutDate(co);
-                      setCalendarOpen(false);
-                      return;
-                    }
+                <div className="absolute right-0 z-50 mt-2 bg-white shadow-2xl rounded-xl border border-gray-100">
+                  <Calendar
+                    checkIn={checkInDate}
+                    checkOut={checkOutDate}
+                    bookedDates={bookedDates}
+                    onSelectDate={(ci, co) => {
+                      // full range chosen
+                      if (ci && co) {
+                        setCheckInDate(ci);
+                        setCheckOutDate(co);
+                        setCalendarOpen(false);
+                        return;
+                      }
 
-                    // clearing
-                    if (!ci && !co) {
-                      setCheckInDate(null);
-                      setCheckOutDate(null);
-                      return;
-                    }
+                      // clearing
+                      if (!ci && !co) {
+                        setCheckInDate(null);
+                        setCheckOutDate(null);
+                        return;
+                      }
 
-                    // check-in step
-                    if (activeField === "checkIn" && ci) {
-                      setCheckInDate(ci);
-                      setCheckOutDate(null);
-                      return;
-                    }
+                      // check-in step
+                      if (activeField === "checkIn" && ci) {
+                        setCheckInDate(ci);
+                        setCheckOutDate(null);
+                        return;
+                      }
 
-                    // check-out step
-                    if (activeField === "checkOut" && co && checkInDate && dayjs(co).isAfter(checkInDate)) {
-                      setCheckOutDate(co);
-                      setCalendarOpen(false);
-                    }
-                  }}
-                  onClose={() => setCalendarOpen(false)}
-                />
+                      // check-out step
+                      if (activeField === "checkOut" && co && checkInDate && dayjs(co).isAfter(checkInDate)) {
+                        setCheckOutDate(co);
+                        setCalendarOpen(false);
+                      }
+                    }}
+                    onClose={() => setCalendarOpen(false)}
+                  />
+                </div>
               )}
 
               {/* Guest dropdown */}
@@ -2776,7 +3057,99 @@ const RoomDetails = () => {
         onClose={() => setShowAmenitiesModal(false)}
         amenitiesByCategory={amenitiesByCategory}
       />
+
+      <ReviewsModal
+        isOpen={showReviewsModal}
+        onClose={() => setShowReviewsModal(false)}
+        reviews={roomReviews}
+        roomTitle={room?.title || "Roostr Listing"}
+      />
     </>
+  );
+};
+
+// ---------- ReviewsModal ----------
+const ReviewsModal = ({ isOpen, onClose, reviews, roomTitle }) => {
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white w-full max-w-[650px] max-h-[85vh] rounded-[24px] shadow-2xl flex flex-col overflow-hidden animate-slideUp">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <div>
+            <h3 className="text-[17px] font-bold text-gray-900">All Reviews</h3>
+            <p className="text-[12px] text-gray-500 truncate max-w-[400px]">{roomTitle}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-gray-100 transition text-gray-500 hover:text-gray-800"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+          {reviews.length === 0 ? (
+            <p className="text-sm text-gray-500 text-center py-10">No reviews yet.</p>
+          ) : (
+            reviews.map((review) => (
+              <div key={review._id} className="border-b pb-4 last:border-0 last:pb-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-sm">
+                    {(review.userId?.name || "G")[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-[14px] font-semibold leading-4">{review.userId?.name || "Guest"}</p>
+                    <p className="text-[12px] text-gray-500 leading-4">{review.userId?.country || "Roostr Member"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-[12px] text-gray-700 mb-2">
+                  <div className="flex text-[#FF5A5F] text-[15px]">
+                    {Array.from({ length: review.rating }, (_, idx) => (
+                      <span key={idx}>★</span>
+                    ))}
+                  </div>
+                  <span>·</span>
+                  <span className="text-gray-500">{dayjs(review.createdAt).format("MMM YYYY")}</span>
+                </div>
+                <p className="text-[14px] text-gray-800 leading-relaxed mb-3 whitespace-pre-line">
+                  {review.comment}
+                </p>
+
+                {/* Host reply */}
+                {review.reply && (
+                  <div className="ml-6 pl-4 border-l-4 border-[#1ecc61] bg-[#f9fbf9] p-3 rounded-r-lg">
+                    <p className="text-[13px] font-semibold text-gray-800 mb-1">
+                      Response from Host
+                    </p>
+                    <p className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">
+                      {review.reply}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-1">
+                      Replied: {dayjs(review.replyCreatedAt).format("MMM YYYY")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

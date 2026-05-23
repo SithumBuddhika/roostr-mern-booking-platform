@@ -273,6 +273,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/room-meta", roomMetaRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/host-analytics", require("./routes/hostAnalyticsRoutes"));
+app.use("/api/reviews", require("./routes/reviewRoutes"));
 
 // Static uploads (local only; Vercel serverless won’t persist)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

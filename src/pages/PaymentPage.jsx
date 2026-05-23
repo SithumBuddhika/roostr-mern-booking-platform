@@ -341,11 +341,11 @@ const PaymentPage = () => {
   return (
     <>
       {/* Top logo nav (no main site navbar/footer here) */}
-      <nav className="bg-[#f3f8fe] shadow-md px-10 py-5 rounded-t-xl">
-        <img src={logo} alt="Roostr" className="h-20 w-auto" />
+      <nav className="bg-[#f3f8fe] shadow-md px-4 md:px-10 py-3 md:py-5 rounded-t-xl">
+        <img src={logo} alt="Roostr" className="h-12 md:h-20 w-auto" />
       </nav>
 
-      <div className="min-h-screen bg-white px-4 py-6 lg:px-28 xl:px-48">
+      <div className="min-h-screen bg-white px-4 py-4 md:py-6 lg:px-28 xl:px-48">
         {/* Title */}
         <div className="flex items-center gap-2 mb-8">
           <img
@@ -662,7 +662,7 @@ const PaymentPage = () => {
         </div>
       </div>
 
-      <footer className="w-full border-t text-sm text-gray-600 py-4 px-6 flex justify-start bg-gray-50">
+      <footer className="w-full border-t text-sm text-gray-600 py-4 px-4 md:px-6 flex justify-start bg-gray-50">
         <span className="mr-2">Privacy</span>·
         <span className="ml-2">Terms</span>
       </footer>

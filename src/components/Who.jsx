@@ -177,11 +177,11 @@ const Who = ({ isOpen, values, onChange }) => {
     >
       <div
         className="
-          w-[430px]
+          w-full md:w-[430px]
           bg-white
           rounded-[26px]
           shadow-[0_22px_60px_rgba(0,0,0,0.28)]
-          px-8 py-6
+          px-4 md:px-8 py-5 md:py-6
         "
       >
         <div className="space-y-5">

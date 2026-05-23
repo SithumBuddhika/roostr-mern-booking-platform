@@ -59,17 +59,17 @@ const JustNav = () => {
   };
 
   return (
-    <div className="bg-[#f3f8fe] shadow-md px-10 py-5 rounded-t-xl">
+    <div className="bg-[#f3f8fe] shadow-md px-4 md:px-10 py-3 md:py-5 rounded-t-xl">
       {/* Top Navbar */}
       <div className="flex items-center justify-between">
         {/* Left - Logo (click to go home) */}
         <div className="cursor-pointer" onClick={handleLogoClick}>
-          <img src={logo} alt="Roostr" className="h-20 w-auto" />
+          <img src={logo} alt="Roostr" className="h-12 md:h-20 w-auto" />
         </div>
 
         {/* Right - Controls */}
-        <div className="flex items-center space-x-5">
-          <span className="text-sm font-medium">Become a host</span>
+        <div className="flex items-center space-x-3 md:space-x-5">
+          <span className="text-sm font-medium hidden md:inline">Become a host</span>
           <img
             src={user}
             alt="user"

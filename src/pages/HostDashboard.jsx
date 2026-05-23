@@ -2,6 +2,17 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  AreaChart,
+  Area,
+} from "recharts";
 
 import profileImg from "../assets/roomimages/host.png";
 import closeIcon from "../assets/roomimages/close.png";
@@ -260,7 +271,7 @@ const ManageListingModal = ({ room, onClose, token, onRoomUpdated }) => {
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-[980px] px-8 py-7 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-[980px] px-4 md:px-8 py-5 md:py-7 relative max-h-[90vh] overflow-y-auto">
         {/* close button */}
         <button
           onClick={onClose}
@@ -578,6 +589,12 @@ const HostDashboard = () => {
   const [totalReports, setTotalReports] = useState(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState(Array(12).fill(0));
 
+  // reviews state
+  const [hostReviews, setHostReviews] = useState([]);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [replyTexts, setReplyTexts] = useState({});
+  const [submittingReply, setSubmittingReply] = useState({});
+
   const token = useMemo(() => localStorage.getItem("roostrToken"), []);
 
   useEffect(() => {
@@ -626,13 +643,71 @@ const HostDashboard = () => {
         }
       };
 
+      const fetchHostReviews = async () => {
+        try {
+          const res = await axios.get(`${API_URL}/api/reviews/host/${hostId}`, {
+            headers: {
+              Authorization: `Bearer ${tokenLocal}`,
+            },
+          });
+          const reviews = res.data.reviews || [];
+          setHostReviews(reviews);
+          setTotalReviews(reviews.length);
+          if (reviews.length > 0) {
+            setSelectedReviewId(reviews[0]._id);
+          }
+        } catch (err) {
+          console.error("Error fetching host reviews:", err);
+        }
+      };
+
       fetchRooms();
+      fetchHostReviews();
     } catch (e) {
       console.error("Failed to parse roostrUser:", e);
       setHostError("Invalid user session. Please login again.");
       setLoading(false);
     }
   }, []);
+
+  const handleReplySubmit = async (reviewId) => {
+    const reply = replyTexts[reviewId];
+    if (!reply || reply.trim() === "") return;
+
+    try {
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: true }));
+      await axios.put(
+        `${API_URL}/api/reviews/${reviewId}/reply`,
+        { reply },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh reviews list
+      const storedUser = localStorage.getItem("roostrUser");
+      const tokenLocal = localStorage.getItem("roostrToken");
+      if (storedUser && tokenLocal) {
+        const parsed = JSON.parse(storedUser);
+        const hostId = parsed.id || parsed._id;
+        const res = await axios.get(`${API_URL}/api/reviews/host/${hostId}`, {
+          headers: {
+            Authorization: `Bearer ${tokenLocal}`,
+          },
+        });
+        setHostReviews(res.data.reviews || []);
+      }
+
+      setReplyTexts((prev) => ({ ...prev, [reviewId]: "" }));
+    } catch (err) {
+      console.error("Error submitting reply:", err);
+      alert(err.response?.data?.message || "Failed to submit reply.");
+    } finally {
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: false }));
+    }
+  };
 
   // ---- aggregate bookings for all rooms to power stats + chart ----
   useEffect(() => {
@@ -738,7 +813,7 @@ const HostDashboard = () => {
         {/* TOP SECTION: PROFILE + STATS */}
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           {/* LEFT: PROFILE CARD */}
-          <div className="w-full max-w-[260px] flex-shrink-0">
+          <div className="w-full max-w-[260px] flex-shrink-0 mx-auto lg:mx-0">
             <div className="bg-white rounded-[16px] shadow-[0_4px_15px_rgba(0,0,0,0.2)] p-5 text-center">
               <img
                 src={profileImg}
@@ -820,7 +895,7 @@ const HostDashboard = () => {
             </div>
 
             {/* little metrics row */}
-            <div className="grid grid-cols-3 gap-6 mb-6 text-[11px] text-gray-600">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 text-[11px] text-gray-600">
               <div>
                 <p className="font-semibold text-[12px]">Occupancy rate</p>
                 <p className="text-[16px] font-semibold text-gray-900">
@@ -847,23 +922,35 @@ const HostDashboard = () => {
             </div>
 
             {/* bars – driven by monthlyRevenue */}
-            <div className="flex items-end gap-4 h-[110px]">
-              {lastSixMonths.map((month, idx) => (
-                <div
-                  key={month.label + idx}
-                  className="flex-1 flex flex-col items-center"
-                >
-                  <div className="w-full h-[90px] bg-[#eef3ff] rounded-[12px] flex items-end justify-center">
-                    <div
-                      className="w-[80%] rounded-[10px] bg-[#1ecc61]"
-                      style={{ height: `${barHeights[idx]}%` }}
-                    />
-                  </div>
-                  <span className="mt-1 text-[11px] text-gray-500">
-                    {month.label}
-                  </span>
-                </div>
-              ))}
+            <div className="h-[200px] w-full mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={lastSixMonths} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="label" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 11 }} 
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 11 }}
+                    tickFormatter={(val) => `$${val}`}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(30, 204, 97, 0.05)' }} 
+                    formatter={(value) => [`$${value}`, 'Revenue']}
+                    contentStyle={{ borderRadius: 8, border: '1px solid #eee', fontSize: 12 }}
+                  />
+                  <Bar 
+                    dataKey="value" 
+                    fill="#1ecc61" 
+                    radius={[6, 6, 0, 0]} 
+                    maxBarSize={40} 
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
@@ -877,35 +964,55 @@ const HostDashboard = () => {
               Last 30 days · quick replies boost your ranking
             </p>
 
-            {/* simple fake line – looks good, not wired yet */}
-            <div className="h-[90px] mb-4 relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-[#e5f9ea] to-white rounded-xl border border-[#e3e8f0]" />
-              <svg
-                viewBox="0 0 100 40"
-                className="relative w-full h-full"
-                preserveAspectRatio="none"
-              >
-                <polyline
-                  fill="none"
-                  stroke="#1ecc61"
-                  strokeWidth="2"
-                  points="0,25 16,30 32,18 48,24 64,14 80,20 100,10"
-                />
-                {[0, 16, 32, 48, 64, 80, 100].map((x, i) => {
-                  const ys = [25, 30, 18, 24, 14, 20, 10];
-                  return (
-                    <circle
-                      key={i}
-                      cx={x}
-                      cy={ys[i]}
-                      r="1.8"
-                      fill="#1ecc61"
-                      stroke="white"
-                      strokeWidth="0.8"
-                    />
-                  );
-                })}
-              </svg>
+            {/* working area chart */}
+            <div className="h-[140px] w-full mt-4 mb-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={[
+                    { name: "Mon", rate: 70 },
+                    { name: "Tue", rate: 75 },
+                    { name: "Wed", rate: 73 },
+                    { name: "Thu", rate: 85 },
+                    { name: "Fri", rate: 80 },
+                    { name: "Sat", rate: 92 },
+                    { name: "Sun", rate: 75 },
+                  ]}
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#1ecc61" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#1ecc61" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
+                  <XAxis 
+                    dataKey="name" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 10 }} 
+                  />
+                  <YAxis 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fill: '#888', fontSize: 10 }}
+                    domain={[0, 100]}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`${value}%`, 'Response Rate']}
+                    contentStyle={{ borderRadius: 8, border: '1px solid #eee', fontSize: 12 }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="rate"
+                    stroke="#1ecc61"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorRate)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="grid grid-cols-2 gap-5 text-[11px] text-gray-600">
@@ -981,6 +1088,190 @@ const HostDashboard = () => {
               >
                 Add new house
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* REVIEWS & FEEDBACKS — Compact split-pane message inbox */}
+        <div className="mt-10 border-t pt-8">
+          <h2 className="font-semibold text-[16px] mb-4">
+            Guest Reviews & Feedbacks ({hostReviews.length})
+          </h2>
+
+          {hostReviews.length === 0 ? (
+            <p className="text-[13px] text-gray-500 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] rounded-xl p-5 text-center">
+              No reviews or feedbacks have been submitted for your listings yet.
+            </p>
+          ) : (
+            <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] rounded-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[420px]">
+              {/* Left pane: Reviews List */}
+              <div className="w-full md:w-[350px] border-r border-gray-100 flex flex-col h-full bg-gray-50/30">
+                <div className="p-3 border-b border-gray-100 bg-white">
+                  <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Inbox</span>
+                </div>
+                <div className="overflow-y-auto flex-1 divide-y divide-gray-50">
+                  {hostReviews.map((review) => {
+                    const isSelected = selectedReviewId === review._id;
+                    const hasReplied = !!review.reply;
+                    return (
+                      <button
+                        key={review._id}
+                        type="button"
+                        onClick={() => setSelectedReviewId(review._id)}
+                        className={`w-full text-left p-3.5 flex gap-3 transition-all relative ${
+                          isSelected ? "bg-[#fff5f5] border-l-4 border-[#FF5A5F]" : "hover:bg-gray-50/80 bg-white"
+                        }`}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
+                          {(review.userId?.name || "G")[0].toUpperCase()}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[12px] font-semibold text-gray-800 truncate">
+                              {review.userId?.name || "Guest"}
+                            </span>
+                            <span className="text-[9px] text-gray-400">
+                              {new Date(review.createdAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 truncate mb-1">
+                            {review.roomId?.title || "Listing"}
+                          </p>
+                          <p className="text-[11px] text-gray-600 truncate italic">
+                            "{review.comment}"
+                          </p>
+                        </div>
+                        {/* Status dot */}
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <span className={`inline-block w-2 h-2 rounded-full ${hasReplied ? "bg-green-500" : "bg-amber-500"}`} title={hasReplied ? "Replied" : "Pending reply"} />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right pane: Review Details & Reply view */}
+              <div className="flex-1 flex flex-col h-full bg-white justify-between">
+                {(() => {
+                  const activeReview = hostReviews.find((r) => r._id === selectedReviewId) || hostReviews[0];
+                  if (!activeReview) {
+                    return (
+                      <div className="flex-grow flex items-center justify-center text-gray-400 text-[13px]">
+                        Select a review to read and reply
+                      </div>
+                    );
+                  }
+
+                  const hasReplied = !!activeReview.reply;
+                  return (
+                    <>
+                      {/* Details header */}
+                      <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Listing</p>
+                          <p className="text-[13px] font-semibold text-gray-800 truncate">
+                            {activeReview.roomId?.title || "Unknown Room"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="flex text-[#FF5A5F] text-[12px]">
+                            {Array.from({ length: activeReview.rating }, (_, idx) => (
+                              <span key={idx}>★</span>
+                            ))}
+                            {Array.from({ length: 5 - activeReview.rating }, (_, idx) => (
+                              <span key={`e${idx}`} className="text-gray-200">★</span>
+                            ))}
+                          </div>
+                          <span className="text-[11px] font-semibold text-gray-700 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
+                            {activeReview.rating}.0
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content panel */}
+                      <div className="flex-1 p-5 overflow-y-auto space-y-4">
+                        {/* Guest comment card */}
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
+                            {(activeReview.userId?.name || "G")[0].toUpperCase()}
+                          </div>
+                          <div className="bg-gray-50 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] border border-gray-100">
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="text-[12px] font-semibold text-gray-800">
+                                {activeReview.userId?.name || "Guest"}
+                              </span>
+                              <span className="text-[9px] text-gray-400">
+                                {activeReview.userId?.country || "Roostr Member"} · {new Date(activeReview.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line">
+                              {activeReview.comment}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Host reply card (if exists) */}
+                        {hasReplied && (
+                          <div className="flex gap-3 justify-end">
+                            <div className="bg-[#f0faf4] rounded-2xl rounded-tr-none p-3.5 max-w-[85%] border border-[#e2f3e8] text-right">
+                              <div className="flex items-baseline justify-end gap-2 mb-1">
+                                <span className="text-[9px] text-gray-400">
+                                  Replied {new Date(activeReview.replyCreatedAt).toLocaleDateString()}
+                                </span>
+                                <span className="text-[12px] font-semibold text-green-700">
+                                  You (Host)
+                                </span>
+                              </div>
+                              <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line text-left">
+                                {activeReview.reply}
+                              </p>
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1ecc61] to-[#12a34c] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                              H
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Reply input panel */}
+                      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                        {hasReplied ? (
+                          <div className="text-center py-1 text-[11px] text-gray-500 font-medium flex items-center justify-center gap-1">
+                            <span className="text-green-500 text-sm">✓</span> Reply successfully sent
+                          </div>
+                        ) : (
+                          <div className="flex items-end gap-2">
+                            <textarea
+                              placeholder={`Reply to ${activeReview.userId?.name || "Guest"}...`}
+                              value={replyTexts[activeReview._id] || ""}
+                              onChange={(e) =>
+                                setReplyTexts((prev) => ({
+                                  ...prev,
+                                  [activeReview._id]: e.target.value,
+                                }))
+                              }
+                              className="flex-1 p-2.5 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61] bg-white resize-none"
+                              rows={2}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleReplySubmit(activeReview._id)}
+                              disabled={
+                                submittingReply[activeReview._id] ||
+                                !replyTexts[activeReview._id]?.trim()
+                              }
+                              className="px-4 py-2 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[11px] font-bold rounded-xl transition disabled:opacity-40 flex-shrink-0 h-fit"
+                            >
+                              {submittingReply[activeReview._id] ? "Sending..." : "Send Reply"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </div>

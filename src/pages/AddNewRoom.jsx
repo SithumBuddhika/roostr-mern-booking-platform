@@ -1300,7 +1300,7 @@ const AddNewRoom = () => {
   return (
     <>
       <div className="min-h-screen bg-[#f4f4f4] py-10">
-        <div className="mx-auto max-w-[1120px] bg-white rounded-3xl shadow-[0_18px_55px_rgba(0,0,0,0.16)] px-12 pt-10 pb-12">
+        <div className="mx-auto max-w-[1120px] bg-white rounded-3xl shadow-[0_18px_55px_rgba(0,0,0,0.16)] px-4 md:px-12 pt-10 pb-12">
           <h1 className="text-[18px] font-semibold mb-8">Add a New House, Apartment</h1>
 
           {/* 1. Name */}
@@ -1312,7 +1312,7 @@ const AddNewRoom = () => {
               placeholder="Name"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-[320px] h-10 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
+              className="w-full max-w-[320px] h-10 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
             />
 
             <div className="mt-4 flex flex-wrap gap-3">
@@ -1321,12 +1321,12 @@ const AddNewRoom = () => {
                 placeholder="City (eg: Colombo)"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
+                className="w-full max-w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
               />
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black bg-white"
+                className="w-full max-w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black bg-white"
               >
                 <option value="Sri Lanka">Sri Lanka</option>
                 <option value="Japan">Japan</option>
@@ -1426,7 +1426,7 @@ const AddNewRoom = () => {
                         copy[idx] = e.target.value;
                         setHouseRules(copy);
                       }}
-                      className="w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
+                      className="w-full max-w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
                     />
                   ))}
                 </div>
@@ -1446,7 +1446,7 @@ const AddNewRoom = () => {
                         copy[idx] = e.target.value;
                         setSafetyRules(copy);
                       }}
-                      className="w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
+                      className="w-full max-w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
                     />
                   ))}
                 </div>
@@ -1459,7 +1459,7 @@ const AddNewRoom = () => {
                   placeholder="Name"
                   value={cancellationPolicy}
                   onChange={(e) => setCancellationPolicy(e.target.value)}
-                  className="w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
+                  className="w-full max-w-[260px] h-9 px-4 text-[13px] border border-[#c4c4c4] rounded-full outline-none focus:border-black"
                 />
               </div>
             </div>

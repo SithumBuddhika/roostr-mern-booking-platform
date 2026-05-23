@@ -99,18 +99,25 @@ const Navbar = () => {
     window.location.href = '/';
   };
 
+  const handleSearchClick = () => {
+    window.location.href = '/';
+  };
+
   return (
-    <div className="bg-[#EEF4FB] px-8 py-4 shadow-md rounded-t-xl">
+    <div className="bg-[#EEF4FB] px-4 md:px-8 py-3 md:py-4 shadow-md rounded-t-xl">
       {/* Top Bar */}
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="cursor-pointer" onClick={handleLogoClick}>
-          <img src={logo} alt="Roostr" className="h-14 w-auto" />
+          <img src={logo} alt="Roostr" className="h-10 md:h-14 w-auto" />
         </div>
 
-        {/* Search Ribbon (Centered) */}
-        <div className="flex-1 flex justify-center">
-          <div className="flex items-center bg-white rounded-full shadow-md px-6 py-3 space-x-6">
+        {/* Search Ribbon (Centered) - Desktop Only */}
+        <div className="hidden md:flex flex-grow justify-center mx-4">
+          <div 
+            onClick={handleSearchClick}
+            className="flex items-center bg-white rounded-full shadow-md px-6 py-2.5 space-x-6 cursor-pointer hover:shadow-lg transition duration-200"
+          >
             {/* Where */}
             <div className="flex flex-col pr-4 border-r border-gray-300">
               <span className="text-sm font-semibold leading-tight">Where</span>
@@ -138,15 +145,15 @@ const Navbar = () => {
             </div>
 
             {/* Search Button */}
-            <button className="ml-2 bg-[#e94a3f] p-3 rounded-full">
+            <button className="ml-2 bg-[#e94a3f] p-2.5 rounded-full">
               <img src={searchIcon} alt="search" className="h-4 w-4" />
             </button>
           </div>
         </div>
 
         {/* User Controls */}
-        <div className="flex items-center space-x-4 ml-4">
-          <span className="text-sm font-medium">Become a host</span>
+        <div className="flex items-center space-x-2 md:space-x-4">
+          <span className="text-sm font-medium hidden md:inline">Become a host</span>
           <img
             src={user}
             alt="user"
@@ -154,6 +161,23 @@ const Navbar = () => {
           />
           <BurgerMenu />
         </div>
+      </div>
+
+      {/* Mobile Search Bar - Visible on Mobile Only */}
+      <div className="flex md:hidden mt-3">
+        <button
+          type="button"
+          onClick={handleSearchClick}
+          className="flex items-center gap-3 w-full bg-white rounded-full shadow-md px-4 py-2.5"
+        >
+          <img src={searchIcon} alt="search" className="h-4 w-4 opacity-60" />
+          <div className="flex flex-col text-left">
+            <span className="text-[13px] font-semibold leading-tight">Where to?</span>
+            <span className="text-[11px] text-gray-500 leading-tight">
+              Anywhere · Any week · Add guests
+            </span>
+          </div>
+        </button>
       </div>
     </div>
   );

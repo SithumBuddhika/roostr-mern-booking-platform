@@ -589,7 +589,7 @@ const Calendar = ({ checkIn, checkOut, onSelectDate, onClose, bookedDates = [] }
     }
 
     return (
-      <div className="w-[220px]">
+      <div className="w-full md:w-[220px]">
         <h2 className="font-semibold text-[13px] text-center mb-2">{month.format('MMMM YYYY')}</h2>
         <div className="grid grid-cols-7 gap-y-1 text-center text-sm">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
@@ -615,9 +615,7 @@ const Calendar = ({ checkIn, checkOut, onSelectDate, onClose, bookedDates = [] }
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.3 }}
-        // className="absolute z-50 bg-white p-3 shadow-xl rounded-xl w-[500px]"
-        // className="absolute z-50 bg-white p-3 shadow-xl rounded-xl w-[500px] left-1/2 transform -translate-x-1/2"
-        className="absolute z-50 right-0 z-50 bg-white p-3 shadow-xl rounded-xl w-[500px]"
+        className="z-50 bg-white p-3 shadow-xl rounded-xl w-full md:w-[500px]"
 
       >
         {/* Top Summary */}
@@ -648,14 +646,16 @@ const Calendar = ({ checkIn, checkOut, onSelectDate, onClose, bookedDates = [] }
           <button onClick={goToNextMonth} className="text-xl font-light">&#8250;</button>
         </div>
 
-        {/* Two Month View */}
-        <div className="flex justify-between gap-4 px-4">
+        {/* Two Month View (single on mobile) */}
+        <div className="flex flex-col md:flex-row md:justify-between gap-4 px-2 md:px-4">
           {renderMonth(currentMonth)}
-          {renderMonth(nextMonth)}
+          <div className="hidden md:block">
+            {renderMonth(nextMonth)}
+          </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-between mt-5">
+        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
           <button
             onClick={applyDates}
             disabled={!(localCheckIn && localCheckOut)}

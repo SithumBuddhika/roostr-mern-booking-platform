@@ -33,8 +33,8 @@ const SuggestedDestinations = ({ onSelect }) => {
   return (
     <div
       className="
-        w-[350px]
-        h-[490px]
+        w-full md:w-[350px]
+        h-auto md:h-[490px]
         bg-white
         rounded-[28px]
         shadow-[0_18px_45px_rgba(0,0,0,0.16)]
