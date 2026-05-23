@@ -29,6 +29,7 @@ exports.updateMe = async (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       country: req.body.country,
+      avatar: req.body.avatar,
     };
 
     const user = await User.findByIdAndUpdate(userId, updates, {

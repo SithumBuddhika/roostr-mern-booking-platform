@@ -949,7 +949,6 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 
 import backimg from "../assets/paymentimages/backimg.png";
-import profilePlaceholder from "../assets/roomimages/host.png";
 import deleteIcon from "../assets/roomimages/delete.png";
 import downloadIcon from "../assets/paymentimages/download.png";
 import roomPlaceholder from "../assets/paymentimages/roomimg.png";
@@ -958,9 +957,6 @@ import logo from "../assets/logo.png";
 // ✅ If you use Vite proxy, keep "". If not, set "http://localhost:5000"
 const API_BASE = "";
 
-// layout
-const CARD_W = "max-w-[640px]";
-const CARD_PAD = "px-6 py-6";
 
 // helper for loading logo into jsPDF
 const loadImage = (src) =>
@@ -1025,6 +1021,27 @@ const Profile = () => {
   // ----------- BOOKINGS (PAST TRIPS) ----------
   const [trips, setTrips] = useState([]);
   const [tripsLoading, setTripsLoading] = useState(false);
+
+  const renderAvatar = (sizeClass = "w-20 h-20 text-[24px]") => {
+    const currentAvatar = avatarPreview || user?.avatar;
+    const isPlaceholder = !currentAvatar || currentAvatar.includes("host.png");
+    if (!isPlaceholder) {
+      return (
+        <img
+          src={currentAvatar}
+          alt="avatar"
+          className={`${sizeClass.split(" ")[0]} ${sizeClass.split(" ")[1]} rounded-full object-cover border-4 border-white shadow-md`}
+        />
+      );
+    }
+
+    const firstLetter = (user?.name || "U")[0].toUpperCase();
+    return (
+      <div className={`${sizeClass} rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold shadow-md border-4 border-white`}>
+        {firstLetter}
+      </div>
+    );
+  };
 
   // ---------- load current user ----------
   useEffect(() => {
@@ -1416,8 +1433,6 @@ const Profile = () => {
     }
   };
 
-  // ---------- UI helpers ----------
-  const avatarSrc = avatarPreview || profilePlaceholder;
 
   const goBack = () => navigate(-1);
   const goToHostDashboard = () => navigate("/host/dashboard");
@@ -1487,59 +1502,116 @@ const Profile = () => {
                 <h2 className="text-[18px] font-semibold mb-6">About me</h2>
 
                 <div
-                  className={[
-                    "bg-white rounded-[16px] shadow-[0_6px_22px_rgba(0,0,0,0.12)]",
-                    CARD_W,
-                    CARD_PAD,
-                  ].join(" ")}
+                  className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden w-full max-w-[640px]"
                 >
                   {profileLoading ? (
-                    <div className="text-[14px] text-gray-500">Loading profile...</div>
+                    <div className="p-8 text-center text-[14px] text-gray-500">
+                      <div className="animate-pulse flex flex-col items-center space-y-4">
+                        <div className="w-20 h-20 bg-gray-200 rounded-full" />
+                        <div className="w-40 h-4 bg-gray-200 rounded" />
+                        <div className="w-60 h-3 bg-gray-200 rounded" />
+                      </div>
+                    </div>
                   ) : !user ? (
-                    <div className="text-[14px] text-gray-500">No user details are available.</div>
+                    <div className="p-8 text-center text-[14px] text-gray-500">
+                      No user details are available.
+                    </div>
                   ) : (
                     <>
-                      <div className="w-full flex justify-center mb-6">
-                        <img
-                          src={avatarSrc}
-                          alt="avatar"
-                          className="w-[72px] h-[72px] rounded-full object-cover"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-[13px]">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Name:</span>
-                          <span className="font-semibold text-gray-800 text-sm">{user.name || "—"}</span>
+                      {/* Top Banner & Profile Intro */}
+                      <div className="relative bg-gradient-to-r from-[#FF5A5F] to-[#FF7A85] h-28" />
+                      <div className="px-6 pb-6 relative">
+                        {/* Avatar position overlapping banner */}
+                        <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-12 mb-6 gap-4">
+                          <div className="flex flex-col sm:flex-row items-center sm:items-end gap-3 text-center sm:text-left">
+                            {renderAvatar("w-[96px] h-[96px] text-[32px]")}
+                            <div className="mb-1">
+                              <h3 className="text-xl font-bold text-gray-800">
+                                {user.name}
+                              </h3>
+                              <p className="text-[12px] text-gray-500 font-medium flex items-center justify-center sm:justify-start gap-1">
+                                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
+                                {user.role === "host" ? "Roostr Host" : "Roostr Guest"}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={openEdit}
+                              className="px-4 py-2.5 text-[12px] font-bold rounded-xl bg-black text-white hover:bg-gray-800 transition duration-200 shadow-sm"
+                            >
+                              Edit Profile
+                            </button>
+                            <button 
+                              className="px-4 py-2.5 text-[12px] font-semibold rounded-xl border border-gray-200 text-gray-500 hover:text-red-500 hover:border-red-200 hover:bg-red-50/30 transition duration-200"
+                            >
+                              Delete Account
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                          <span className="text-gray-500 sm:min-w-[130px] text-[12px]">
-                            Contact Number:
-                          </span>
-                          <span className="font-semibold text-gray-800 text-sm truncate">{user.phone || "—"}</span>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Country:</span>
-                          <span className="font-semibold text-gray-800 text-sm">{user.country || "—"}</span>
-                        </div>
+                        {/* Profile Info Details Grid */}
+                        <div className="border-t border-gray-100 pt-6">
+                          <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-4">
+                            Personal Information
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
+                            {/* Email Card */}
+                            <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100 flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg className="w-4 h-4 text-[#FF5A5F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Email Address</p>
+                                <p className="font-semibold text-gray-700 truncate mt-0.5">{user.email || "—"}</p>
+                              </div>
+                            </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 col-span-1 sm:col-span-2">
-                          <span className="text-gray-500 sm:min-w-[95px] text-[12px]">Email:</span>
-                          <span className="font-semibold text-gray-800 text-sm truncate">{user.email || "—"}</span>
-                        </div>
-                      </div>
+                            {/* Phone Card */}
+                            <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100 flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg className="w-4 h-4 text-[#FF5A5F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Contact Number</p>
+                                <p className="font-semibold text-gray-700 truncate mt-0.5">{user.phone || "—"}</p>
+                              </div>
+                            </div>
 
-                      <div className="mt-6 flex gap-3 justify-center">
-                        <button
-                          onClick={openEdit}
-                          className="px-4 py-2 rounded-md bg-black text-white text-[13px]"
-                        >
-                          Update Info
-                        </button>
-                        <button className="px-4 py-2 rounded-md bg-gray-200 text-[13px]">
-                          Delete Account
-                        </button>
+                            {/* Country Card */}
+                            <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100 flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg className="w-4 h-4 text-[#FF5A5F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5A2.5 2.5 0 0019 9.5V8a2 2 0 00-2-2h-1a2 2 0 00-2-2v-.065M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                                </svg>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Country / Region</p>
+                                <p className="font-semibold text-gray-700 truncate mt-0.5">{user.country || "—"}</p>
+                              </div>
+                            </div>
+
+                            {/* Trust Card */}
+                            <div className="bg-gray-50/50 rounded-xl p-3.5 border border-gray-100 flex items-start gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase">Trust & Safety</p>
+                                <p className="font-semibold text-green-600 truncate mt-0.5">
+                                  Verified Member
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </>
                   )}
@@ -1547,24 +1619,34 @@ const Profile = () => {
 
                 {/* Edit modal */}
                 {editOpen && (
-                  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40">
-                    <div className="bg-white rounded-[16px] p-6 w-full max-w-[420px]">
-                      <h3 className="text-[16px] font-semibold mb-4">Edit Profile</h3>
-
-                      <div className="flex justify-center mb-4">
-                        <img
-                          src={avatarPreview || profilePlaceholder}
-                          alt="avatar"
-                          className="w-[72px] h-[72px] rounded-full object-cover"
-                        />
+                  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-45 p-4">
+                    <div className="bg-white rounded-[24px] p-6 w-full max-w-[440px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] animate-in fade-in zoom-in-95 duration-200">
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="text-[18px] font-bold text-gray-800">Edit Profile</h3>
+                        <button 
+                          onClick={() => setEditOpen(false)}
+                          className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
                       </div>
 
-                      <div className="flex justify-center mb-4">
+                      {/* Image Editor */}
+                      <div className="flex flex-col items-center mb-6">
+                        <div className="relative group cursor-pointer rounded-full overflow-hidden" onClick={() => fileInputRef.current?.click()}>
+                          {renderAvatar("w-[96px] h-[96px] text-[32px]")}
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <span className="text-[10px] text-white font-bold uppercase tracking-wider">Change</span>
+                          </div>
+                        </div>
                         <button
-                          className="text-[12px] px-3 py-1 border rounded-full"
+                          type="button"
+                          className="mt-3 text-[12px] font-semibold text-[#FF5A5F] hover:text-[#e04f53] transition"
                           onClick={() => fileInputRef.current?.click()}
                         >
-                          Change Photo
+                          Upload New Photo
                         </button>
                         <input
                           ref={fileInputRef}
@@ -1575,54 +1657,57 @@ const Profile = () => {
                         />
                       </div>
 
-                      <div className="space-y-3 text-[13px]">
+                      <div className="space-y-4 text-[13px]">
                         <div>
-                          <label className="block text-gray-500 mb-1">Name</label>
+                          <label className="block text-gray-500 font-semibold mb-1">Name</label>
                           <input
                             name="name"
                             value={editData?.name || ""}
                             onChange={handleEditChange}
-                            className="w-full border rounded-md px-3 py-2 text-[13px]"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:border-[#FF5A5F] focus:ring-1 focus:ring-[#FF5A5F] transition"
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-500 mb-1">Email</label>
+                          <label className="block text-gray-500 font-semibold mb-1">Email</label>
                           <input
                             name="email"
                             value={editData?.email || ""}
                             onChange={handleEditChange}
-                            className="w-full border rounded-md px-3 py-2 text-[13px]"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:border-[#FF5A5F] focus:ring-1 focus:ring-[#FF5A5F] transition"
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-500 mb-1">Phone</label>
+                          <label className="block text-gray-500 font-semibold mb-1">Phone</label>
                           <input
                             name="phone"
                             value={editData?.phone || ""}
                             onChange={handleEditChange}
-                            className="w-full border rounded-md px-3 py-2 text-[13px]"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:border-[#FF5A5F] focus:ring-1 focus:ring-[#FF5A5F] transition"
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-500 mb-1">Country</label>
+                          <label className="block text-gray-500 font-semibold mb-1">Country</label>
                           <input
                             name="country"
                             value={editData?.country || ""}
                             onChange={handleEditChange}
-                            className="w-full border rounded-md px-3 py-2 text-[13px]"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:border-[#FF5A5F] focus:ring-1 focus:ring-[#FF5A5F] transition"
                           />
                         </div>
                       </div>
 
-                      <div className="mt-5 flex justify-end gap-3">
-                        <button onClick={() => setEditOpen(false)} className="px-4 py-2 text-[13px]">
+                      <div className="mt-6 flex justify-end gap-3">
+                        <button
+                          onClick={() => setEditOpen(false)}
+                          className="px-4 py-2.5 text-[13px] font-semibold text-gray-500 hover:text-gray-800 transition"
+                        >
                           Cancel
                         </button>
                         <button
                           onClick={saveProfile}
-                          className="px-4 py-2 rounded-md bg-black text-white text-[13px]"
+                          className="px-5 py-2.5 rounded-xl bg-black text-white text-[13px] font-bold hover:bg-gray-800 transition shadow-sm"
                         >
-                          Save
+                          Save Changes
                         </button>
                       </div>
                     </div>

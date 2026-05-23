@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
     dateOfBirth: { type: String },    // "DD/MM/YYYY" for now
     phone: { type: String },          // phone number
     country: { type: String },        // Country / Region
+    avatar: { type: String },         // base64 avatar image string
   },
   { timestamps: true }
 );
