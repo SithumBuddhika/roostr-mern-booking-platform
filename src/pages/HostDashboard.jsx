@@ -591,6 +591,7 @@ const HostDashboard = () => {
 
   // reviews state
   const [hostReviews, setHostReviews] = useState([]);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [replyTexts, setReplyTexts] = useState({});
   const [submittingReply, setSubmittingReply] = useState({});
 
@@ -649,8 +650,12 @@ const HostDashboard = () => {
               Authorization: `Bearer ${tokenLocal}`,
             },
           });
-          setHostReviews(res.data.reviews || []);
-          setTotalReviews(res.data.reviews?.length || 0);
+          const reviews = res.data.reviews || [];
+          setHostReviews(reviews);
+          setTotalReviews(reviews.length);
+          if (reviews.length > 0) {
+            setSelectedReviewId(reviews[0]._id);
+          }
         } catch (err) {
           console.error("Error fetching host reviews:", err);
         }
@@ -1087,7 +1092,7 @@ const HostDashboard = () => {
           )}
         </div>
 
-        {/* REVIEWS & FEEDBACKS — compact inbox style */}
+        {/* REVIEWS & FEEDBACKS — Compact split-pane message inbox */}
         <div className="mt-10 border-t pt-8">
           <h2 className="font-semibold text-[16px] mb-4">
             Guest Reviews & Feedbacks ({hostReviews.length})
@@ -1098,98 +1103,175 @@ const HostDashboard = () => {
               No reviews or feedbacks have been submitted for your listings yet.
             </p>
           ) : (
-            <div className="bg-white shadow-[0_2px_10px_rgba(0,0,0,0.07)] rounded-xl overflow-hidden divide-y divide-gray-100">
-              {hostReviews.map((review) => (
-                <div key={review._id} className="px-4 py-3 hover:bg-gray-50/50 transition-colors">
-                  {/* Top row: avatar + name + listing + stars */}
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
-                      {(review.userId?.name || "G")[0].toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[13px] font-semibold text-gray-800 truncate">
-                          {review.userId?.name || "Guest"}
-                        </span>
-                        <span className="text-[10px] text-gray-400">·</span>
-                        <span className="text-[10px] text-gray-400 truncate">
-                          {review.roomId?.title || "Listing"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="flex text-[#FF5A5F] text-[11px]">
-                          {Array.from({ length: review.rating }, (_, idx) => (
-                            <span key={idx}>★</span>
-                          ))}
-                          {Array.from({ length: 5 - review.rating }, (_, idx) => (
-                            <span key={`e${idx}`} className="text-gray-200">★</span>
-                          ))}
-                        </div>
-                        <span className="text-[10px] text-gray-400">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Comment bubble */}
-                  <div className="ml-[42px] mt-1.5">
-                    <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line">
-                      {review.comment}
-                    </p>
-                  </div>
-
-                  {/* Reply or reply-input */}
-                  <div className="ml-[42px] mt-2">
-                    {review.reply ? (
-                      <div className="flex items-start gap-2 bg-[#f0faf4] rounded-lg px-3 py-2">
-                        <div className="w-5 h-5 rounded-full bg-[#1ecc61] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0 mt-0.5">
-                          ✓
+            <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] rounded-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[420px]">
+              {/* Left pane: Reviews List */}
+              <div className="w-full md:w-[350px] border-r border-gray-100 flex flex-col h-full bg-gray-50/30">
+                <div className="p-3 border-b border-gray-100 bg-white">
+                  <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Inbox</span>
+                </div>
+                <div className="overflow-y-auto flex-1 divide-y divide-gray-50">
+                  {hostReviews.map((review) => {
+                    const isSelected = selectedReviewId === review._id;
+                    const hasReplied = !!review.reply;
+                    return (
+                      <button
+                        key={review._id}
+                        type="button"
+                        onClick={() => setSelectedReviewId(review._id)}
+                        className={`w-full text-left p-3.5 flex gap-3 transition-all relative ${
+                          isSelected ? "bg-[#fff5f5] border-l-4 border-[#FF5A5F]" : "hover:bg-gray-50/80 bg-white"
+                        }`}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
+                          {(review.userId?.name || "G")[0].toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[11px] text-gray-700 leading-relaxed whitespace-pre-line">
-                            {review.reply}
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[12px] font-semibold text-gray-800 truncate">
+                              {review.userId?.name || "Guest"}
+                            </span>
+                            <span className="text-[9px] text-gray-400">
+                              {new Date(review.createdAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 truncate mb-1">
+                            {review.roomId?.title || "Listing"}
                           </p>
-                          <p className="text-[9px] text-gray-400 mt-0.5">
-                            Replied {new Date(review.replyCreatedAt).toLocaleDateString()}
+                          <p className="text-[11px] text-gray-600 truncate italic">
+                            "{review.comment}"
                           </p>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-end gap-2">
-                        <input
-                          type="text"
-                          placeholder="Write a reply..."
-                          value={replyTexts[review._id] || ""}
-                          onChange={(e) =>
-                            setReplyTexts((prev) => ({
-                              ...prev,
-                              [review._id]: e.target.value,
-                            }))
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && replyTexts[review._id]?.trim()) {
-                              handleReplySubmit(review._id);
-                            }
-                          }}
-                          className="flex-1 px-3 py-1.5 border rounded-full text-[11px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61] bg-gray-50"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleReplySubmit(review._id)}
-                          disabled={
-                            submittingReply[review._id] ||
-                            !replyTexts[review._id]?.trim()
-                          }
-                          className="px-3 py-1.5 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[10px] font-bold rounded-full transition disabled:opacity-40 flex-shrink-0"
-                        >
-                          {submittingReply[review._id] ? "..." : "Reply"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                        {/* Status dot */}
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <span className={`inline-block w-2 h-2 rounded-full ${hasReplied ? "bg-green-500" : "bg-amber-500"}`} title={hasReplied ? "Replied" : "Pending reply"} />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
+
+              {/* Right pane: Review Details & Reply view */}
+              <div className="flex-1 flex flex-col h-full bg-white justify-between">
+                {(() => {
+                  const activeReview = hostReviews.find((r) => r._id === selectedReviewId) || hostReviews[0];
+                  if (!activeReview) {
+                    return (
+                      <div className="flex-grow flex items-center justify-center text-gray-400 text-[13px]">
+                        Select a review to read and reply
+                      </div>
+                    );
+                  }
+
+                  const hasReplied = !!activeReview.reply;
+                  return (
+                    <>
+                      {/* Details header */}
+                      <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Listing</p>
+                          <p className="text-[13px] font-semibold text-gray-800 truncate">
+                            {activeReview.roomId?.title || "Unknown Room"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="flex text-[#FF5A5F] text-[12px]">
+                            {Array.from({ length: activeReview.rating }, (_, idx) => (
+                              <span key={idx}>★</span>
+                            ))}
+                            {Array.from({ length: 5 - activeReview.rating }, (_, idx) => (
+                              <span key={`e${idx}`} className="text-gray-200">★</span>
+                            ))}
+                          </div>
+                          <span className="text-[11px] font-semibold text-gray-700 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
+                            {activeReview.rating}.0
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content panel */}
+                      <div className="flex-1 p-5 overflow-y-auto space-y-4">
+                        {/* Guest comment card */}
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
+                            {(activeReview.userId?.name || "G")[0].toUpperCase()}
+                          </div>
+                          <div className="bg-gray-50 rounded-2xl rounded-tl-none p-3.5 max-w-[85%] border border-gray-100">
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="text-[12px] font-semibold text-gray-800">
+                                {activeReview.userId?.name || "Guest"}
+                              </span>
+                              <span className="text-[9px] text-gray-400">
+                                {activeReview.userId?.country || "Roostr Member"} · {new Date(activeReview.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line">
+                              {activeReview.comment}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Host reply card (if exists) */}
+                        {hasReplied && (
+                          <div className="flex gap-3 justify-end">
+                            <div className="bg-[#f0faf4] rounded-2xl rounded-tr-none p-3.5 max-w-[85%] border border-[#e2f3e8] text-right">
+                              <div className="flex items-baseline justify-end gap-2 mb-1">
+                                <span className="text-[9px] text-gray-400">
+                                  Replied {new Date(activeReview.replyCreatedAt).toLocaleDateString()}
+                                </span>
+                                <span className="text-[12px] font-semibold text-green-700">
+                                  You (Host)
+                                </span>
+                              </div>
+                              <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line text-left">
+                                {activeReview.reply}
+                              </p>
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1ecc61] to-[#12a34c] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                              H
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Reply input panel */}
+                      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+                        {hasReplied ? (
+                          <div className="text-center py-1 text-[11px] text-gray-500 font-medium flex items-center justify-center gap-1">
+                            <span className="text-green-500 text-sm">✓</span> Reply successfully sent
+                          </div>
+                        ) : (
+                          <div className="flex items-end gap-2">
+                            <textarea
+                              placeholder={`Reply to ${activeReview.userId?.name || "Guest"}...`}
+                              value={replyTexts[activeReview._id] || ""}
+                              onChange={(e) =>
+                                setReplyTexts((prev) => ({
+                                  ...prev,
+                                  [activeReview._id]: e.target.value,
+                                }))
+                              }
+                              className="flex-1 p-2.5 border border-gray-200 rounded-xl text-[12px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61] bg-white resize-none"
+                              rows={2}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleReplySubmit(activeReview._id)}
+                              disabled={
+                                submittingReply[activeReview._id] ||
+                                !replyTexts[activeReview._id]?.trim()
+                              }
+                              className="px-4 py-2 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[11px] font-bold rounded-xl transition disabled:opacity-40 flex-shrink-0 h-fit"
+                            >
+                              {submittingReply[activeReview._id] ? "Sending..." : "Send Reply"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </div>
