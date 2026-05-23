@@ -1087,80 +1087,79 @@ const HostDashboard = () => {
           )}
         </div>
 
-        {/* REVIEWS & FEEDBACKS */}
+        {/* REVIEWS & FEEDBACKS — compact inbox style */}
         <div className="mt-10 border-t pt-8">
           <h2 className="font-semibold text-[16px] mb-4">
             Guest Reviews & Feedbacks ({hostReviews.length})
           </h2>
 
           {hostReviews.length === 0 ? (
-            <p className="text-[13px] text-gray-500 bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[16px] p-6 text-center">
+            <p className="text-[13px] text-gray-500 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] rounded-xl p-5 text-center">
               No reviews or feedbacks have been submitted for your listings yet.
             </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white shadow-[0_2px_10px_rgba(0,0,0,0.07)] rounded-xl overflow-hidden divide-y divide-gray-100">
               {hostReviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[16px] p-5 flex flex-col justify-between"
-                >
-                  <div>
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                          Listing
-                        </p>
-                        <p className="text-[13px] font-semibold text-gray-800 truncate" title={review.roomId?.title || "Unknown Room"}>
-                          {review.roomId?.title || "Unknown Room"}
-                        </p>
-                      </div>
-                      <div className="flex text-[#FF5A5F] text-[14px] flex-shrink-0">
-                        {Array.from({ length: review.rating }, (_, idx) => (
-                          <span key={idx}>★</span>
-                        ))}
-                      </div>
+                <div key={review._id} className="px-4 py-3 hover:bg-gray-50/50 transition-colors">
+                  {/* Top row: avatar + name + listing + stars */}
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center font-bold text-gray-600 text-[11px] flex-shrink-0">
+                      {(review.userId?.name || "G")[0].toUpperCase()}
                     </div>
-
-                    {/* Reviewer info */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-xs">
-                        {(review.userId?.name || "G")[0].toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="text-[12px] font-medium text-gray-700 leading-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] font-semibold text-gray-800 truncate">
                           {review.userId?.name || "Guest"}
-                        </p>
-                        <p className="text-[10px] text-gray-400">
-                          {review.userId?.country || "Roostr Member"} · {new Date(review.createdAt).toLocaleDateString()}
-                        </p>
+                        </span>
+                        <span className="text-[10px] text-gray-400">·</span>
+                        <span className="text-[10px] text-gray-400 truncate">
+                          {review.roomId?.title || "Listing"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex text-[#FF5A5F] text-[11px]">
+                          {Array.from({ length: review.rating }, (_, idx) => (
+                            <span key={idx}>★</span>
+                          ))}
+                          {Array.from({ length: 5 - review.rating }, (_, idx) => (
+                            <span key={`e${idx}`} className="text-gray-200">★</span>
+                          ))}
+                        </div>
+                        <span className="text-[10px] text-gray-400">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Comment */}
-                    <p className="text-[13px] text-gray-700 leading-relaxed italic bg-gray-50 p-3 rounded-lg border-l-2 border-gray-300 mb-4 whitespace-pre-line">
-                      "{review.comment}"
+                  {/* Comment bubble */}
+                  <div className="ml-[42px] mt-1.5">
+                    <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-line">
+                      {review.comment}
                     </p>
                   </div>
 
-                  {/* Reply section */}
-                  <div className="mt-2 border-t pt-3">
+                  {/* Reply or reply-input */}
+                  <div className="ml-[42px] mt-2">
                     {review.reply ? (
-                      <div className="bg-[#f2faf5] p-3 rounded-lg border-l-2 border-[#1ecc61]">
-                        <p className="text-[11px] font-bold text-green-700 mb-1">
-                          Your response:
-                        </p>
-                        <p className="text-[12px] text-gray-600 leading-relaxed whitespace-pre-line">
-                          {review.reply}
-                        </p>
-                        <p className="text-[9px] text-gray-400 mt-1">
-                          Replied: {new Date(review.replyCreatedAt).toLocaleDateString()}
-                        </p>
+                      <div className="flex items-start gap-2 bg-[#f0faf4] rounded-lg px-3 py-2">
+                        <div className="w-5 h-5 rounded-full bg-[#1ecc61] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0 mt-0.5">
+                          ✓
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[11px] text-gray-700 leading-relaxed whitespace-pre-line">
+                            {review.reply}
+                          </p>
+                          <p className="text-[9px] text-gray-400 mt-0.5">
+                            Replied {new Date(review.replyCreatedAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-2">
-                        <textarea
-                          placeholder="Type your response to this guest..."
+                      <div className="flex items-end gap-2">
+                        <input
+                          type="text"
+                          placeholder="Write a reply..."
                           value={replyTexts[review._id] || ""}
                           onChange={(e) =>
                             setReplyTexts((prev) => ({
@@ -1168,8 +1167,12 @@ const HostDashboard = () => {
                               [review._id]: e.target.value,
                             }))
                           }
-                          className="w-full p-2 border rounded-lg text-[12px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61]"
-                          rows={2}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && replyTexts[review._id]?.trim()) {
+                              handleReplySubmit(review._id);
+                            }
+                          }}
+                          className="flex-1 px-3 py-1.5 border rounded-full text-[11px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61] bg-gray-50"
                         />
                         <button
                           type="button"
@@ -1178,9 +1181,9 @@ const HostDashboard = () => {
                             submittingReply[review._id] ||
                             !replyTexts[review._id]?.trim()
                           }
-                          className="self-end px-3 py-1 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[11px] font-bold rounded-md transition disabled:opacity-50"
+                          className="px-3 py-1.5 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[10px] font-bold rounded-full transition disabled:opacity-40 flex-shrink-0"
                         >
-                          {submittingReply[review._id] ? "Submitting..." : "Send Reply"}
+                          {submittingReply[review._id] ? "..." : "Reply"}
                         </button>
                       </div>
                     )}

@@ -348,8 +348,20 @@ const HomeScreen = () => {
   // ---------------- RENDER ----------------
   if (loading || searchLoading) {
     return (
-      <div className="px-4 md:px-14 mt-10 text-sm text-gray-600">
-        {loading ? "Loading homes..." : "Applying search filters (dates & availability)..."}
+      <div className="px-4 md:px-14 mt-6 md:mt-10">
+        {/* Skeleton section title */}
+        <div className="h-6 w-40 bg-gray-200 rounded-md mb-5 animate-pulse" />
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 rounded-xl w-full h-[120px] sm:h-[150px]" />
+              <div className="mt-2 h-4 bg-gray-200 rounded w-[85%]" />
+              <div className="mt-1.5 h-3 bg-gray-100 rounded w-[60%]" />
+              <div className="mt-1.5 h-3 bg-gray-100 rounded w-[70%]" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
