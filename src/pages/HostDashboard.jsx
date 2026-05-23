@@ -14,7 +14,6 @@ import {
   Area,
 } from "recharts";
 
-import profileImg from "../assets/roomimages/host.png";
 import closeIcon from "../assets/roomimages/close.png";
 
 const API_URL = "";
@@ -597,6 +596,31 @@ const HostDashboard = () => {
 
   const token = useMemo(() => localStorage.getItem("roostrToken"), []);
 
+  const renderAvatar = (sizeClass = "w-20 h-20 text-[24px]") => {
+    const currentAvatar = user?.avatar;
+    const isPlaceholder = !currentAvatar || currentAvatar.includes("host.png");
+    if (!isPlaceholder) {
+      return (
+        <img
+          src={currentAvatar}
+          alt="Host Profile"
+          className={`${sizeClass.split(" ")[0]} ${sizeClass.split(" ")[1]} rounded-full object-cover border-4 border-white shadow-md mx-auto`}
+        />
+      );
+    }
+
+    const firstLetter = (user?.name || "H")[0].toUpperCase();
+    return (
+      <div className={`${sizeClass} rounded-full bg-gradient-to-tr from-[#FF5A5F] to-[#FF7A85] text-white flex items-center justify-center font-bold shadow-md border-4 border-white mx-auto`}>
+        {firstLetter}
+      </div>
+    );
+  };
+
+  const handleUpdateInfo = () => {
+    navigate("/profile", { state: { initialTab: "about" } });
+  };
+
   useEffect(() => {
     const storedUser = localStorage.getItem("roostrUser");
     const tokenLocal = localStorage.getItem("roostrToken");
@@ -814,19 +838,28 @@ const HostDashboard = () => {
         <div className="flex flex-col lg:flex-row gap-8 mb-10">
           {/* LEFT: PROFILE CARD */}
           <div className="w-full max-w-[260px] flex-shrink-0 mx-auto lg:mx-0">
-            <div className="bg-white rounded-[16px] shadow-[0_4px_15px_rgba(0,0,0,0.2)] p-5 text-center">
-              <img
-                src={profileImg}
-                alt="Host Profile"
-                className="w-[80px] h-[80px] rounded-full object-cover mx-auto mb-3"
-              />
-              <p className="font-semibold text-[16px]">
-                {user?.name || "Your name"}
-              </p>
-              <p className="text-[14px] text-gray-500 mb-3">Superhost</p>
-              <button className="px-4 py-[6px] bg-black text-white text-[13px] rounded-md w-full">
-                Update Info
-              </button>
+            <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-gray-100 overflow-hidden text-center">
+              {/* Card top banner */}
+              <div className="relative bg-gradient-to-r from-[#FF5A5F] to-[#FF7A85] h-16" />
+              <div className="px-5 pb-5 relative -mt-8">
+                {/* Avatar */}
+                <div className="mb-3">
+                  {renderAvatar("w-[72px] h-[72px] text-[24px]")}
+                </div>
+                <h3 className="font-bold text-[16px] text-gray-800">
+                  {user?.name || "Host Name"}
+                </h3>
+                <p className="text-[12px] text-gray-500 font-medium flex items-center justify-center gap-1 mb-4 mt-0.5">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                  Superhost
+                </p>
+                <button 
+                  onClick={handleUpdateInfo}
+                  className="w-full py-2 bg-black text-white font-bold text-[12px] rounded-xl hover:bg-gray-800 transition duration-200 shadow-sm"
+                >
+                  Update Info
+                </button>
+              </div>
             </div>
           </div>
 
