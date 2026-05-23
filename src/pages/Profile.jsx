@@ -1641,7 +1641,7 @@ const Profile = () => {
                 ) : trips.length === 0 ? (
                   <div className="text-[14px] text-gray-500">You don&apos;t have any bookings yet.</div>
                 ) : (
-                  <div className="flex flex-col items-start gap-5">
+                  <div className="flex flex-col items-stretch sm:items-start gap-5 w-full">
                     {trips.map((t) => {
                       const room = t.roomId || {};
                       const checkIn = new Date(t.checkIn);
@@ -1654,11 +1654,7 @@ const Profile = () => {
                       return (
                         <div
                           key={t._id}
-                          className={[
-                            "bg-white rounded-[16px] shadow-[0_6px_22px_rgba(0,0,0,0.12)]",
-                            CARD_W,
-                            CARD_PAD,
-                          ].join(" ")}
+                          className="bg-white rounded-[16px] shadow-[0_6px_22px_rgba(0,0,0,0.12)] w-full max-w-[640px] px-4 py-5 sm:px-6 sm:py-6"
                         >
                           <div className="flex flex-col sm:grid sm:grid-cols-[64px_1fr_1fr_1fr] gap-4 sm:gap-6 items-start">
                             <img
