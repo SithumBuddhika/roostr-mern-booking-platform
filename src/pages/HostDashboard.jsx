@@ -589,6 +589,11 @@ const HostDashboard = () => {
   const [totalReports, setTotalReports] = useState(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState(Array(12).fill(0));
 
+  // reviews state
+  const [hostReviews, setHostReviews] = useState([]);
+  const [replyTexts, setReplyTexts] = useState({});
+  const [submittingReply, setSubmittingReply] = useState({});
+
   const token = useMemo(() => localStorage.getItem("roostrToken"), []);
 
   useEffect(() => {
@@ -637,13 +642,67 @@ const HostDashboard = () => {
         }
       };
 
+      const fetchHostReviews = async () => {
+        try {
+          const res = await axios.get(`${API_URL}/api/reviews/host/${hostId}`, {
+            headers: {
+              Authorization: `Bearer ${tokenLocal}`,
+            },
+          });
+          setHostReviews(res.data.reviews || []);
+          setTotalReviews(res.data.reviews?.length || 0);
+        } catch (err) {
+          console.error("Error fetching host reviews:", err);
+        }
+      };
+
       fetchRooms();
+      fetchHostReviews();
     } catch (e) {
       console.error("Failed to parse roostrUser:", e);
       setHostError("Invalid user session. Please login again.");
       setLoading(false);
     }
   }, []);
+
+  const handleReplySubmit = async (reviewId) => {
+    const reply = replyTexts[reviewId];
+    if (!reply || reply.trim() === "") return;
+
+    try {
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: true }));
+      await axios.put(
+        `${API_URL}/api/reviews/${reviewId}/reply`,
+        { reply },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Refresh reviews list
+      const storedUser = localStorage.getItem("roostrUser");
+      const tokenLocal = localStorage.getItem("roostrToken");
+      if (storedUser && tokenLocal) {
+        const parsed = JSON.parse(storedUser);
+        const hostId = parsed.id || parsed._id;
+        const res = await axios.get(`${API_URL}/api/reviews/host/${hostId}`, {
+          headers: {
+            Authorization: `Bearer ${tokenLocal}`,
+          },
+        });
+        setHostReviews(res.data.reviews || []);
+      }
+
+      setReplyTexts((prev) => ({ ...prev, [reviewId]: "" }));
+    } catch (err) {
+      console.error("Error submitting reply:", err);
+      alert(err.response?.data?.message || "Failed to submit reply.");
+    } finally {
+      setSubmittingReply((prev) => ({ ...prev, [reviewId]: false }));
+    }
+  };
 
   // ---- aggregate bookings for all rooms to power stats + chart ----
   useEffect(() => {
@@ -1024,6 +1083,110 @@ const HostDashboard = () => {
               >
                 Add new house
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* REVIEWS & FEEDBACKS */}
+        <div className="mt-10 border-t pt-8">
+          <h2 className="font-semibold text-[16px] mb-4">
+            Guest Reviews & Feedbacks ({hostReviews.length})
+          </h2>
+
+          {hostReviews.length === 0 ? (
+            <p className="text-[13px] text-gray-500 bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[16px] p-6 text-center">
+              No reviews or feedbacks have been submitted for your listings yet.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {hostReviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-[16px] p-5 flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                          Listing
+                        </p>
+                        <p className="text-[13px] font-semibold text-gray-800 truncate" title={review.roomId?.title || "Unknown Room"}>
+                          {review.roomId?.title || "Unknown Room"}
+                        </p>
+                      </div>
+                      <div className="flex text-[#FF5A5F] text-[14px] flex-shrink-0">
+                        {Array.from({ length: review.rating }, (_, idx) => (
+                          <span key={idx}>★</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Reviewer info */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-700 text-xs">
+                        {(review.userId?.name || "G")[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[12px] font-medium text-gray-700 leading-3">
+                          {review.userId?.name || "Guest"}
+                        </p>
+                        <p className="text-[10px] text-gray-400">
+                          {review.userId?.country || "Roostr Member"} · {new Date(review.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Comment */}
+                    <p className="text-[13px] text-gray-700 leading-relaxed italic bg-gray-50 p-3 rounded-lg border-l-2 border-gray-300 mb-4 whitespace-pre-line">
+                      "{review.comment}"
+                    </p>
+                  </div>
+
+                  {/* Reply section */}
+                  <div className="mt-2 border-t pt-3">
+                    {review.reply ? (
+                      <div className="bg-[#f2faf5] p-3 rounded-lg border-l-2 border-[#1ecc61]">
+                        <p className="text-[11px] font-bold text-green-700 mb-1">
+                          Your response:
+                        </p>
+                        <p className="text-[12px] text-gray-600 leading-relaxed whitespace-pre-line">
+                          {review.reply}
+                        </p>
+                        <p className="text-[9px] text-gray-400 mt-1">
+                          Replied: {new Date(review.replyCreatedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <textarea
+                          placeholder="Type your response to this guest..."
+                          value={replyTexts[review._id] || ""}
+                          onChange={(e) =>
+                            setReplyTexts((prev) => ({
+                              ...prev,
+                              [review._id]: e.target.value,
+                            }))
+                          }
+                          className="w-full p-2 border rounded-lg text-[12px] focus:outline-none focus:ring-1 focus:ring-[#1ecc61]"
+                          rows={2}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleReplySubmit(review._id)}
+                          disabled={
+                            submittingReply[review._id] ||
+                            !replyTexts[review._id]?.trim()
+                          }
+                          className="self-end px-3 py-1 bg-[#1ecc61] hover:bg-[#19ab51] text-white text-[11px] font-bold rounded-md transition disabled:opacity-50"
+                        >
+                          {submittingReply[review._id] ? "Submitting..." : "Send Reply"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
