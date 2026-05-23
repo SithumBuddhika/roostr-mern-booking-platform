@@ -341,10 +341,12 @@
 
 // src/pages/Signup.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL ?? "";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [countryOpen, setCountryOpen] = useState(false);
   const [country, setCountry] = useState("Sri Lanka");
 
@@ -481,10 +483,15 @@ const Signup = () => {
           localStorage.setItem("hostToken", data.token);
         }
         localStorage.setItem("isHost", "true");
+      } else {
+        localStorage.setItem("isHost", "false");
       }
 
       setSuccess("Signup successful! You are now logged in.");
       setLoading(false);
+      
+      // Navigate to homepage immediately
+      navigate("/");
     } catch (err) {
       console.error("Signup error:", err);
       setError("Something went wrong. Please try again.");

@@ -48,7 +48,7 @@ router.get("/room/:roomId", async (req, res) => {
   try {
     const { roomId } = req.params;
     const reviews = await Review.find({ roomId })
-      .populate("userId", "name email country")
+      .populate("userId", "name email country avatar")
       .sort({ createdAt: -1 });
 
     res.json({ reviews });
@@ -69,7 +69,7 @@ router.get("/host/:hostId", protect, async (req, res) => {
     }
 
     const reviews = await Review.find({ hostId })
-      .populate("userId", "name email country")
+      .populate("userId", "name email country avatar")
       .populate("roomId", "title coverImage")
       .sort({ createdAt: -1 });
 
