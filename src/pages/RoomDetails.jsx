@@ -2700,7 +2700,7 @@ const RoomDetails = () => {
                 onClick={() => setShowReviewsModal(true)}
                 className="text-[17px] font-semibold mb-6 flex items-center hover:underline focus:outline-none"
               >
-                ★ {room.rating ? Number(room.rating).toFixed(1) : "5.0"}
+                ★ {room.reviewCount > 0 && typeof room.rating === "number" ? Number(room.rating).toFixed(1) : "0.0"}
                 <span className="font-normal text-[16px] ml-1">
                   · {room.reviewCount || 0} reviews
                 </span>
@@ -2764,7 +2764,7 @@ const RoomDetails = () => {
                 onClick={() => setShowReviewsModal(true)}
                 className="text-[17px] font-semibold mb-6 flex items-center hover:underline focus:outline-none"
               >
-                ★ {room.rating ? Number(room.rating).toFixed(1) : "5.0"}
+                ★ {room.reviewCount > 0 && typeof room.rating === "number" ? Number(room.rating).toFixed(1) : "0.0"}
                 <span className="font-normal text-[16px] ml-1">
                   · {room.reviewCount || 0} reviews
                 </span>

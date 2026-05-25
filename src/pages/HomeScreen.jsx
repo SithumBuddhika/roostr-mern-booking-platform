@@ -400,7 +400,7 @@ const HomeScreen = () => {
 
                 const pricePerNight = Number(rawPrice) > 0 ? Number(rawPrice) : 80;
 
-                const rating = typeof room?.rating === "number" ? room.rating : 4.84;
+                const rating = room?.reviewCount > 0 && typeof room?.rating === "number" ? room.rating : 0.0;
                 const reviewCount = Number(room?.reviewCount || 0);
 
                 return (

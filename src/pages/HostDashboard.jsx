@@ -323,7 +323,7 @@ const ManageListingModal = ({ room, onClose, token, onRoomUpdated }) => {
               <div className="flex justify-between text-[12px]">
                 <span className="text-gray-500">Rating</span>
                 <span className="font-semibold">
-                  {room.rating?.toFixed(1) || "5.0"} ★
+                  {room.reviewCount > 0 && typeof room.rating === "number" ? room.rating.toFixed(1) : "0.0"} ★
                 </span>
               </div>
             </div>
@@ -593,6 +593,7 @@ const HostDashboard = () => {
   const [selectedReviewId, setSelectedReviewId] = useState(null);
   const [replyTexts, setReplyTexts] = useState({});
   const [submittingReply, setSubmittingReply] = useState({});
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const token = useMemo(() => localStorage.getItem("roostrToken"), []);
 
@@ -1131,7 +1132,7 @@ const HostDashboard = () => {
           ) : (
             <div className="bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] rounded-xl border border-gray-100 overflow-hidden flex flex-col md:flex-row h-[420px]">
               {/* Left pane: Reviews List */}
-              <div className="w-full md:w-[350px] border-r border-gray-100 flex flex-col h-full bg-gray-50/30">
+              <div className={`w-full md:w-[350px] border-r border-gray-100 flex-col h-full bg-gray-50/30 ${showMobileDetail ? "hidden md:flex" : "flex"}`}>
                 <div className="p-3 border-b border-gray-100 bg-white">
                   <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Inbox</span>
                 </div>
@@ -1143,7 +1144,10 @@ const HostDashboard = () => {
                       <button
                         key={review._id}
                         type="button"
-                        onClick={() => setSelectedReviewId(review._id)}
+                        onClick={() => {
+                          setSelectedReviewId(review._id);
+                          setShowMobileDetail(true);
+                        }}
                         className={`w-full text-left p-3.5 flex gap-3 transition-all relative ${
                           isSelected ? "bg-[#fff5f5] border-l-4 border-[#FF5A5F]" : "hover:bg-gray-50/80 bg-white"
                         }`}
@@ -1186,7 +1190,7 @@ const HostDashboard = () => {
               </div>
 
               {/* Right pane: Review Details & Reply view */}
-              <div className="flex-1 flex flex-col h-full bg-white justify-between">
+              <div className={`flex-1 flex-col h-full bg-white justify-between ${showMobileDetail ? "flex" : "hidden md:flex"}`}>
                 {(() => {
                   const activeReview = hostReviews.find((r) => r._id === selectedReviewId) || hostReviews[0];
                   if (!activeReview) {
@@ -1202,11 +1206,23 @@ const HostDashboard = () => {
                     <>
                       {/* Details header */}
                       <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Listing</p>
-                          <p className="text-[13px] font-semibold text-gray-800 truncate">
-                            {activeReview.roomId?.title || "Unknown Room"}
-                          </p>
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* Back Button for mobile */}
+                          <button
+                            type="button"
+                            onClick={() => setShowMobileDetail(false)}
+                            className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 transition"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Listing</p>
+                            <p className="text-[13px] font-semibold text-gray-800 truncate">
+                              {activeReview.roomId?.title || "Unknown Room"}
+                            </p>
+                          </div>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                           <div className="flex text-[#FF5A5F] text-[12px]">
