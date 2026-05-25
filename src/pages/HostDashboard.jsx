@@ -1226,15 +1226,23 @@ const HostDashboard = () => {
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                           <div className="flex text-[#FF5A5F] text-[12px]">
-                            {Array.from({ length: activeReview.rating }, (_, idx) => (
-                              <span key={idx}>★</span>
-                            ))}
-                            {Array.from({ length: 5 - activeReview.rating }, (_, idx) => (
-                              <span key={`e${idx}`} className="text-gray-200">★</span>
-                            ))}
+                            {[1, 2, 3, 4, 5].map((starVal) => {
+                              if (activeReview.rating >= starVal) {
+                                return <span key={starVal}>★</span>;
+                              } else if (activeReview.rating >= starVal - 0.5) {
+                                return (
+                                  <span key={starVal} className="relative inline-block overflow-hidden w-[1em] text-gray-200">
+                                    ★
+                                    <span className="absolute top-0 left-0 overflow-hidden text-[#FF5A5F] w-[50%]">★</span>
+                                  </span>
+                                );
+                              } else {
+                                return <span key={starVal} className="text-gray-200">★</span>;
+                              }
+                            })}
                           </div>
                           <span className="text-[11px] font-semibold text-gray-700 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-                            {activeReview.rating}.0
+                            {Number(activeReview.rating).toFixed(1)}
                           </span>
                         </div>
                       </div>

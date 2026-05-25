@@ -2797,9 +2797,20 @@ const RoomDetails = () => {
                       </div>
                       <div className="flex items-center gap-2 text-[13px] text-gray-700 mb-1">
                         <div className="flex text-[#FF5A5F] text-[15px]">
-                          {Array.from({ length: review.rating }, (_, idx) => (
-                            <span key={idx}>★</span>
-                          ))}
+                          {[1, 2, 3, 4, 5].map((starVal) => {
+                            if (review.rating >= starVal) {
+                              return <span key={starVal}>★</span>;
+                            } else if (review.rating >= starVal - 0.5) {
+                              return (
+                                <span key={starVal} className="relative inline-block overflow-hidden w-[1em] text-gray-200">
+                                  ★
+                                  <span className="absolute top-0 left-0 overflow-hidden text-[#FF5A5F] w-[50%]">★</span>
+                                </span>
+                              );
+                            } else {
+                              return <span key={starVal} className="text-gray-200">★</span>;
+                            }
+                          })}
                         </div>
                         <span>·</span>
                         <span>{dayjs(review.createdAt).format("MMM YYYY")}</span>
@@ -2829,19 +2840,38 @@ const RoomDetails = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-4">
                       <span className="text-[13px] text-gray-600 font-medium">Rating:</span>
-                      <div className="flex gap-1 text-[20px] text-gray-300">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setNewRating(star)}
-                            className={`hover:scale-110 transition ${
-                              star <= newRating ? "text-[#FF5A5F]" : "text-gray-300"
-                            }`}
-                          >
-                            ★
-                          </button>
-                        ))}
+                      <div className="flex gap-1 text-[24px] text-gray-300">
+                        {[1, 2, 3, 4, 5].map((starVal) => {
+                          let fillWidthClass = "w-0";
+                          if (newRating >= starVal) {
+                            fillWidthClass = "w-full";
+                          } else if (newRating === starVal - 0.5) {
+                            fillWidthClass = "w-1/2";
+                          }
+
+                          return (
+                            <div key={starVal} className="relative inline-block select-none transition-transform hover:scale-110">
+                              {/* Invisible clickable left half */}
+                              <div
+                                onClick={() => setNewRating(starVal - 0.5)}
+                                className="absolute left-0 top-0 w-1/2 h-full cursor-pointer z-10"
+                                title={`${starVal - 0.5} Stars`}
+                              />
+                              {/* Invisible clickable right half */}
+                              <div
+                                onClick={() => setNewRating(starVal)}
+                                className="absolute right-0 top-0 w-1/2 h-full cursor-pointer z-10"
+                                title={`${starVal} Stars`}
+                              />
+                              {/* Gray background star */}
+                              <span className="text-gray-200 block">★</span>
+                              {/* Colored foreground star (clipped by width) */}
+                              <span className={`absolute top-0 left-0 h-full overflow-hidden text-[#FF5A5F] pointer-events-none block transition-all ${fillWidthClass}`}>
+                                ★
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                     <div className="mb-4">
@@ -3136,9 +3166,20 @@ const ReviewsModal = ({ isOpen, onClose, reviews, roomTitle }) => {
                 </div>
                 <div className="flex items-center gap-2 text-[12px] text-gray-700 mb-2">
                   <div className="flex text-[#FF5A5F] text-[15px]">
-                    {Array.from({ length: review.rating }, (_, idx) => (
-                      <span key={idx}>★</span>
-                    ))}
+                    {[1, 2, 3, 4, 5].map((starVal) => {
+                      if (review.rating >= starVal) {
+                        return <span key={starVal}>★</span>;
+                      } else if (review.rating >= starVal - 0.5) {
+                        return (
+                          <span key={starVal} className="relative inline-block overflow-hidden w-[1em] text-gray-200">
+                            ★
+                            <span className="absolute top-0 left-0 overflow-hidden text-[#FF5A5F] w-[50%]">★</span>
+                          </span>
+                        );
+                      } else {
+                        return <span key={starVal} className="text-gray-200">★</span>;
+                      }
+                    })}
                   </div>
                   <span>·</span>
                   <span className="text-gray-500">{dayjs(review.createdAt).format("MMM YYYY")}</span>
