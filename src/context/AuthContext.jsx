@@ -1,5 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 const AuthContext = createContext(null);
 
@@ -67,6 +68,32 @@ export const AuthProvider = ({ children }) => {
 
     keysToClear.forEach((k) => localStorage.removeItem(k));
   };
+
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          const hasToken =
+            localStorage.getItem("roostrToken") ||
+            localStorage.getItem("roostr_token") ||
+            localStorage.getItem("token") ||
+            localStorage.getItem("authToken");
+
+          if (hasToken) {
+            logout();
+            alert("Your session has expired. Please log in again.");
+            window.location.href = "/login";
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, []);
 
   const value = {
     user,

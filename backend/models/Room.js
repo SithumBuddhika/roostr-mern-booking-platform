@@ -80,7 +80,7 @@ const roomSchema = new mongoose.Schema(
     beds: { type: Number, default: 1 },
     baths: { type: Number, default: 1 },
 
-    rating: { type: Number, default: 5 },
+    rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
 
     // 🌟 NEW: what we edit in “Room basics”

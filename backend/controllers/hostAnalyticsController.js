@@ -269,7 +269,7 @@ const getHostOverview = async (req, res) => {
         bookings: roomBookings.length,
         estimatedRevenue: roomRevenue,
         occupancyRate: roomOccupancy,
-        rating: 5.0, // placeholder until you add real ratings
+        rating: typeof room.rating === "number" ? room.rating : 0.0,
       };
     });
 

@@ -30,7 +30,7 @@ router.post("/", protect, async (req, res) => {
     const reviews = await Review.find({ roomId });
     const count = reviews.length;
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
-    const avgRating = count > 0 ? (totalRating / count).toFixed(1) : 5.0;
+    const avgRating = count > 0 ? (totalRating / count).toFixed(1) : 0.0;
 
     room.reviewCount = count;
     room.rating = Number(avgRating);
